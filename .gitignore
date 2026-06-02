@@ -1,0 +1,16 @@
+venv/
+.env
+
+__pycache__/
+*.pyc
+
+.ipynb_checkpoints/
+
+models/*.pkl
+artifacts/*
+
+data/interim/*
+data/processed/*
+data/feature_store/*
+
+.DS_Store
