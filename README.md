@@ -1,12 +1,27 @@
-# CreditGuard AI
+### 🚀 Baseline Model Results
 
-AI-Powered Credit Risk Decision & Policy Intelligence Platform
+The current baseline model was trained using the following data sources:
+* **Application data**
+* **Bureau credit history aggregations**
+* **Previous application aggregations**
 
-## Modules
+#### 🤖 Model Configuration
+* **Algorithm:** LightGBM
+* **Validation Strategy:** Stratified Train/Validation Split
+* **Evaluation Metric:** ROC-AUC
 
-- Credit Risk Modeling
-- Explainable AI (SHAP)
-- Policy Intelligence (RAG)
-- Agentic Decision Engine
-- FastAPI Backend
-- Streamlit Frontend
+#### 📊 Performance
+| Model | ROC-AUC |
+| :--- | :--- |
+| **LightGBM Baseline** | **0.7724** |
+
+---
+
+### 📦 Current Feature Store
+
+* **Raw application features**
+* **Application engineered features**
+* **Bureau aggregated features**
+* **Previous application aggregated features**
+
+ℹ️ **Total Features:** 150
