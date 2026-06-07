@@ -14,3 +14,8 @@ def load_bureau(path: str):
 def load_previous_application(path: str):
 
     return pd.read_csv(path)
+
+def load_installments(
+    path: str
+):
+    return pd.read_csv(path)

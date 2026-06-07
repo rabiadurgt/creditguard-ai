@@ -1,11 +1,5 @@
-from models.train import (
-    train_model
-)
-
-from models.evaluate import (
-    evaluate_model
-)
-
+from src.models.train import train_model
+from src.models.evaluate import evaluate_model
 
 def main():
 

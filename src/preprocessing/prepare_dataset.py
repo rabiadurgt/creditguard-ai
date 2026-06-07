@@ -1,13 +1,12 @@
 import pandas as pd
 
-from preprocessing.encoder import (
+from src.preprocessing.encoder import (
     encode_categorical_features
 )
 
-from preprocessing.missing_handler import (
+from src.preprocessing.missing_handler import (
     handle_missing_values
 )
-
 
 def prepare_dataset(
     feature_store_path: str
@@ -17,6 +16,9 @@ def prepare_dataset(
         feature_store_path
     )
 
+    df = df.drop(
+        columns=["SK_ID_CURR"]
+    )
     df = handle_missing_values(
         df
     )

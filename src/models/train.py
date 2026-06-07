@@ -1,14 +1,13 @@
 import joblib
 import lightgbm as lgb
 
-from preprocessing.prepare_dataset import (
+from src.preprocessing.prepare_dataset import (
     prepare_dataset
 )
 
-from preprocessing.splitter import (
+from src.preprocessing.splitter import (
     split_dataset
 )
-
 
 def train_model():
 

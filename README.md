@@ -11,10 +11,11 @@ The current baseline model was trained using the following data sources:
 * **Evaluation Metric:** ROC-AUC
 
 #### 📊 Performance
-| Model | ROC-AUC |
-| :--- | :--- |
-| **LightGBM Baseline** | **0.7724** |
-
+| Version | Features | ROC-AUC |
+|----------|----------|----------|
+| LightGBM Baseline | Application + Bureau + Previous | 0.7730 |
+| + Installments | Payment behavior features | 0.7776 |
+| + POS Cash | Delinquency & remaining installment features | 0.7817 |
 ---
 
 ### 📦 Current Feature Store

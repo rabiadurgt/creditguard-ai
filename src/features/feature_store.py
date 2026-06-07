@@ -4,7 +4,9 @@ import pandas as pd
 def merge_features(
     application_df: pd.DataFrame,
     bureau_features: pd.DataFrame,
-    previous_features: pd.DataFrame
+    previous_features: pd.DataFrame,
+    installment_features: pd.DataFrame,
+    pos_features: pd.DataFrame
 ) -> pd.DataFrame:
 
     df = application_df.copy()
@@ -17,6 +19,18 @@ def merge_features(
 
     df = df.merge(
         previous_features,
+        on="SK_ID_CURR",
+        how="left"
+    )
+
+    df = df.merge(
+        installment_features,
+        on="SK_ID_CURR",
+        how="left"
+    )
+
+    df = df.merge(
+        pos_features,
         on="SK_ID_CURR",
         how="left"
     )
