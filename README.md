@@ -77,3 +77,24 @@ Among the engineered features, the following variables consistently rank among t
 * `pos_avg_future_installments`
 
 These features significantly improve the model's ability to capture customer credit risk patterns beyond the raw application data.
+
+
+### 🔍 Model Explainability (SHAP)
+
+To improve model transparency and interpretability, SHAP (SHapley Additive exPlanations) analysis was performed on the final LightGBM model.
+
+#### Most Influential Features
+
+The SHAP analysis showed that, besides the well-known Home Credit external risk scores (`EXT_SOURCE_1`, `EXT_SOURCE_2`, `EXT_SOURCE_3`), several engineered features became among the most important predictors:
+
+* `pos_avg_future_installments`
+* `total_payment_amount`
+* `late_payment_ratio`
+* `avg_days_late`
+* `cc_utilization_ratio`
+* `bureau_debt_credit_ratio`
+* `credit_term`
+* `annuity_credit_ratio`
+* `refusal_rate`
+
+These results confirm that the engineered behavioral credit-risk features significantly contribute to the model's predictive performance and provide meaningful business insights regarding customer repayment behavior.
