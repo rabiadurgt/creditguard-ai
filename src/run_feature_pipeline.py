@@ -9,7 +9,9 @@ from src.data_pipeline.extract import (
     load_application_train,
     load_bureau,
     load_previous_application,
-    load_installments
+    load_installments,
+    load_pos_cash,
+    load_credit_card
 )
 
 from src.data_pipeline.transform import basic_cleaning
@@ -23,6 +25,9 @@ from src.features.build_installment_features import(
 )
 from src.features.build_pos_cash_features import (
     build_pos_cash_features
+)
+from src.features.build_credit_card_features import (
+    build_credit_card_features
 )
 
 
@@ -61,13 +66,20 @@ def main():
 #################################################
 
     print("Loading POS-CASH data...")
-    pos = load_installments(
+    pos = load_pos_cash(
         "data/raw/POS_CASH_balance.csv"
     )
     print(pos.shape)
 
 #################################################
 
+    print("Loading credit card data...")
+    credit_card = load_credit_card(
+        "data/raw/credit_card_balance.csv"
+    )
+    print(credit_card.shape)
+
+#################################################
 
     print("Cleaning application data...")
     application_df = basic_cleaning(
@@ -103,16 +115,27 @@ def main():
             installments
         )
     )
-
     print(installment_features.shape)
-    print("Creating POS features...")
 
+
+    print("Creating POS features...")
     pos_features = (
         build_pos_cash_features(
             pos
         )
     )
     print(pos_features.shape)
+
+
+    print("Creating credit card features...")
+    credit_card_features = (
+        build_credit_card_features(
+            credit_card
+        )
+    )
+    print(credit_card_features.shape)
+
+
 
     print("Merging feature store...")
 
@@ -121,7 +144,8 @@ def main():
         bureau_features,
         previous_features,
         installment_features,
-        pos_features
+        pos_features,
+        credit_card_features
     )
 
     print(feature_store_df.shape)

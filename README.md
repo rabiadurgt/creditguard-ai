@@ -1,28 +1,79 @@
 ### 🚀 Baseline Model Results
 
 The current baseline model was trained using the following data sources:
+
 * **Application data**
 * **Bureau credit history aggregations**
 * **Previous application aggregations**
+* **Installments payment behavior**
+* **POS Cash balance history**
+* **Credit Card balance history**
 
 #### 🤖 Model Configuration
+
 * **Algorithm:** LightGBM
 * **Validation Strategy:** Stratified Train/Validation Split
 * **Evaluation Metric:** ROC-AUC
 
 #### 📊 Performance
+
 | Version | Features | ROC-AUC |
 |----------|----------|----------|
 | LightGBM Baseline | Application + Bureau + Previous | 0.7730 |
 | + Installments | Payment behavior features | 0.7776 |
 | + POS Cash | Delinquency & remaining installment features | 0.7817 |
+| + Credit Card | Credit card utilization & payment behavior features | **0.7829** |
+
+#### 📈 Performance Gain
+
+| Feature Group | ROC-AUC Gain |
+|---------------|-------------:|
+| Bureau Features | +0.02~0.03 |
+| Previous Application Features | +0.01 |
+| Installments Features | +0.0046 |
+| POS Cash Features | +0.0041 |
+| Credit Card Features | +0.0012 |
+
+**Current Best Validation ROC-AUC:** **0.7829**
+
 ---
 
 ### 📦 Current Feature Store
 
-* **Raw application features**
-* **Application engineered features**
-* **Bureau aggregated features**
-* **Previous application aggregated features**
+The feature store currently contains:
 
-ℹ️ **Total Features:** 150
+* Raw application features
+* Application engineered features
+* Bureau aggregated features
+* Previous application aggregated features
+* Installments payment features
+* POS Cash aggregated features
+* Credit Card aggregated features
+
+ℹ️ **Total Features:** 175 columns in feature store  
+ℹ️ **Training Features:** 173 columns after preprocessing and target separation
+
+---
+
+### 🏆 Most Important Engineered Features
+
+Among the engineered features, the following variables consistently rank among the most predictive:
+
+* `credit_term`
+* `annuity_credit_ratio`
+* `bureau_total_credit`
+* `bureau_debt_credit_ratio`
+* `bureau_total_debt`
+* `credit_income_ratio`
+* `annuity_income_ratio`
+* `age_years`
+* `prev_avg_application_amount`
+* `prev_avg_credit_amount`
+* `installment_count`
+* `avg_days_late`
+* `late_payment_ratio`
+* `total_payment_amount`
+* `pos_active_contracts`
+* `pos_avg_future_installments`
+
+These features significantly improve the model's ability to capture customer credit risk patterns beyond the raw application data.
