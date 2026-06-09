@@ -7,7 +7,8 @@ def merge_features(
     previous_features: pd.DataFrame,
     installment_features: pd.DataFrame,
     pos_features: pd.DataFrame,
-    credit_card_features: pd.DataFrame
+    credit_card_features: pd.DataFrame,
+    bureau_balance_features: pd.DataFrame
 ) -> pd.DataFrame:
 
     df = application_df.copy()
@@ -42,4 +43,10 @@ def merge_features(
         how="left"
     )
 
+    df = df.merge(
+        bureau_balance_features,
+        on="SK_ID_CURR",
+        how="left"
+    )
+    
     return df

@@ -11,7 +11,8 @@ from src.data_pipeline.extract import (
     load_previous_application,
     load_installments,
     load_pos_cash,
-    load_credit_card
+    load_credit_card,
+    load_bureau_balance
 )
 
 from src.data_pipeline.transform import basic_cleaning
@@ -20,6 +21,7 @@ from src.features.build_features import create_features
 from src.features.build_bureau_features import create_bureau_features
 from src.features.build_previous_features import create_previous_features
 from src.features.feature_store import merge_features
+
 from src.features.build_installment_features import(
     build_installment_features
 )
@@ -28,6 +30,9 @@ from src.features.build_pos_cash_features import (
 )
 from src.features.build_credit_card_features import (
     build_credit_card_features
+)
+from src.features.build_bureau_balance_features import (
+    build_bureau_balance_features
 )
 
 
@@ -81,41 +86,48 @@ def main():
 
 #################################################
 
+    print("Loading bureau balance data...")
+    bureau_balance = load_bureau_balance(
+        "data/raw/bureau_balance.csv"
+    )
+    print(bureau_balance.shape)
+
+#################################################
+
     print("Cleaning application data...")
     application_df = basic_cleaning(
         application_df
     )
 
-    print("Creating application features...")
 
+    print("Creating application features...")
     application_df = create_features(
         application_df
     )
 
-    print("Creating bureau features...")
 
+    print("Creating bureau features...")
     bureau_features = create_bureau_features(
         bureau_df
     )
-
     print(bureau_features.shape)
 
-    print("Creating previous features...")
 
+    print("Creating previous features...")
     previous_features = create_previous_features(
         previous_df
     )
-
     print(previous_features.shape)
 
-    print("Creating installment features...")
 
+    print("Creating installment features...")
     installment_features = (
         build_installment_features(
             installments
         )
     )
     print(installment_features.shape)
+
 
 
     print("Creating POS features...")
@@ -136,6 +148,14 @@ def main():
     print(credit_card_features.shape)
 
 
+    print("Creating bureau balance features...")
+    bureau_balance_features = (
+        build_bureau_balance_features(
+            bureau_balance,
+            bureau_df
+        )
+    )
+    print(bureau_balance_features.shape)
 
     print("Merging feature store...")
 
@@ -145,7 +165,8 @@ def main():
         previous_features,
         installment_features,
         pos_features,
-        credit_card_features
+        credit_card_features,
+        bureau_balance_features
     )
 
     print(feature_store_df.shape)

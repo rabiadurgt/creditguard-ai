@@ -20,3 +20,6 @@ def load_pos_cash(path: str):
 
 def load_credit_card(path: str):
     return pd.read_csv(path)
+
+def load_bureau_balance(path: str):
+    return pd.read_csv(path)
