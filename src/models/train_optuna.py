@@ -1,15 +1,19 @@
 import optuna
 import lightgbm as lgb
+import numpy as np
 
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import (
+    roc_auc_score
+)
+
+from sklearn.model_selection import (
+    StratifiedKFold
+)
 
 from src.preprocessing.prepare_dataset import (
     prepare_dataset
 )
 
-from src.preprocessing.splitter import (
-    split_dataset
-)
 
 print("Preparing dataset...")
 
@@ -17,17 +21,13 @@ df = prepare_dataset(
     "data/processed/train_feature_store.parquet"
 )
 
-X_train, X_valid, y_train, y_valid = (
-    split_dataset(df)
+X = df.drop(
+    columns=["TARGET"]
 )
 
-print(
-    f"Train shape: {X_train.shape}"
-)
+y = df["TARGET"]
 
-print(
-    f"Validation shape: {X_valid.shape}"
-)
+print(X.shape)
 
 
 def objective(trial):
@@ -76,29 +76,78 @@ def objective(trial):
             1.0
         ),
 
+        "reg_alpha": trial.suggest_float(
+            "reg_alpha",
+            0.0,
+            5.0
+        ),
+
+        "reg_lambda": trial.suggest_float(
+            "reg_lambda",
+            0.0,
+            5.0
+        ),
+
+        "objective": "binary",
+        "metric": "auc",
+        "verbosity": -1,
         "random_state": 42,
         "n_jobs": -1
     }
 
-    model = lgb.LGBMClassifier(
-        **params
+    cv = StratifiedKFold(
+        n_splits=5,
+        shuffle=True,
+        random_state=42
     )
 
-    model.fit(
-        X_train,
-        y_train
+    scores = []
+
+    for train_idx, valid_idx in cv.split(X, y):
+
+        X_train = X.iloc[
+            train_idx
+        ]
+
+        X_valid = X.iloc[
+            valid_idx
+        ]
+
+        y_train = y.iloc[
+            train_idx
+        ]
+
+        y_valid = y.iloc[
+            valid_idx
+        ]
+
+        model = lgb.LGBMClassifier(
+            **params
+        )
+
+        model.fit(
+            X_train,
+            y_train
+        )
+
+        preds = model.predict_proba(
+            X_valid
+        )[:, 1]
+
+        auc = roc_auc_score(
+            y_valid,
+            preds
+        )
+
+        scores.append(
+            auc
+        )
+
+    mean_auc = np.mean(
+        scores
     )
 
-    preds = model.predict_proba(
-        X_valid
-    )[:, 1]
-
-    score = roc_auc_score(
-        y_valid,
-        preds
-    )
-
-    return score
+    return mean_auc
 
 
 if __name__ == "__main__":
@@ -109,18 +158,11 @@ if __name__ == "__main__":
 
     study.optimize(
         objective,
-        n_trials=10
+        n_trials=10   #20
     )
 
-    print(
-        "Best ROC-AUC:",
-        study.best_value
-    )
+    print("\nBest ROC-AUC:")
+    print(study.best_value)
 
-    print(
-        "Best Params:"
-    )
-
-    print(
-        study.best_params
-    )
+    print("\nBest Params:")
+    print(study.best_params)

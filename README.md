@@ -25,7 +25,8 @@ The current baseline model was trained using the following data sources:
 | + POS Cash        | Delinquency & remaining installment features        | 0.7817     |
 | + Credit Card     | Credit card utilization & payment behavior features | 0.7829     |
 | + Bureau Balance  | Bureau repayment history features                   | 0.7830     |
-| Tuned LightGBM    |                                                     | **0.7867** |
+| Tuned LightGBM    | Manual tuning                                       | **0.7867** |
+| Optuna CV Tuned LightGBM | 5-Fold CV Hyperparameter Optimization | **0.7883** |
 
 #### 📈 Performance Gain
 
@@ -38,8 +39,7 @@ The current baseline model was trained using the following data sources:
 | Credit Card Features          |      +0.0012 |
 | Bureau Balance Features       |      +0.0001 |
 
-**Current Best Validation ROC-AUC:** **0.7830**
-**Tuned LightGBM ROC-AUC:** **0.7866**
+**Current Best Validation ROC-AUC:** **0.7883**
 ---
 ### 🔄 Cross Validation Results
 

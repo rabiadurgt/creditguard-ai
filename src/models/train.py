@@ -32,17 +32,27 @@ def train_model():
     )
 
     model = lgb.LGBMClassifier(
-        n_estimators=878,
-        learning_rate=0.06267844215476331,
-        num_leaves=147,
-        max_depth=5,
-        min_child_samples=139,
-        subsample=0.8117252089171065,
-        colsample_bytree=0.8787079632913819,
-        objective="binary",
-        metric="auc",
-        verbosity=-1,
+
+        n_estimators=1362,
+
+        learning_rate=0.09460095501084868,
+
+        num_leaves=87,
+
+        max_depth=3,
+
+        min_child_samples=121,
+
+        subsample=0.7829257002191399,
+
+        colsample_bytree=0.6053061501418525,
+
+        reg_alpha=4.147506457250209,
+
+        reg_lambda=2.240416755904384,
+
         random_state=42,
+
         n_jobs=-1
     )
 
@@ -55,7 +65,8 @@ def train_model():
 
     joblib.dump(
         model,
-        "artifacts/models/lgbm_tuned.pkl"
+        #"artifacts/models/lgbm_tuned.pkl"
+        "artifacts/models/lgbm_optuna_cv.pkl"
     )
 
     print("Model saved.")
