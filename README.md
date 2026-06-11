@@ -24,7 +24,8 @@ The current baseline model was trained using the following data sources:
 | + Installments    | Payment behavior features                           | 0.7776     |
 | + POS Cash        | Delinquency & remaining installment features        | 0.7817     |
 | + Credit Card     | Credit card utilization & payment behavior features | 0.7829     |
-| + Bureau Balance  | Bureau repayment history features                   | **0.7830** |
+| + Bureau Balance  | Bureau repayment history features                   | 0.7830     |
+| Tuned LightGBM    |                                                     | **0.7867** |
 
 #### 📈 Performance Gain
 
@@ -38,8 +39,25 @@ The current baseline model was trained using the following data sources:
 | Bureau Balance Features       |      +0.0001 |
 
 **Current Best Validation ROC-AUC:** **0.7830**
-
+**Tuned LightGBM ROC-AUC:** **0.7866**
 ---
+### 🔄 Cross Validation Results
+
+To obtain a more reliable estimate of model performance, 5-Fold Stratified Cross Validation was performed using the tuned LightGBM model.
+
+| Fold | ROC-AUC |
+|--------|----------|
+| Fold 1 | 0.7790 |
+| Fold 2 | 0.7862 |
+| Fold 3 | 0.7817 |
+| Fold 4 | 0.7861 |
+| Fold 5 | 0.7788 |
+
+**Mean ROC-AUC:** 0.7824
+
+**Standard Deviation:** 0.0033
+
+The relatively low standard deviation indicates stable model behavior across different data splits.
 
 ### 📦 Current Feature Store
 
@@ -108,3 +126,5 @@ The SHAP analysis showed that, besides the well-known Home Credit external risk 
 * `bb_record_count`
 
 These results confirm that the engineered behavioral credit-risk features significantly contribute to the model's predictive performance and provide meaningful business insights regarding customer repayment behavior.
+
+

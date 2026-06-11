@@ -32,9 +32,16 @@ def train_model():
     )
 
     model = lgb.LGBMClassifier(
-        n_estimators=300,
-        learning_rate=0.05,
-        num_leaves=31,
+        n_estimators=878,
+        learning_rate=0.06267844215476331,
+        num_leaves=147,
+        max_depth=5,
+        min_child_samples=139,
+        subsample=0.8117252089171065,
+        colsample_bytree=0.8787079632913819,
+        objective="binary",
+        metric="auc",
+        verbosity=-1,
         random_state=42,
         n_jobs=-1
     )
@@ -48,7 +55,7 @@ def train_model():
 
     joblib.dump(
         model,
-        "artifacts/models/lgbm_baseline.pkl"
+        "artifacts/models/lgbm_tuned.pkl"
     )
 
     print("Model saved.")
