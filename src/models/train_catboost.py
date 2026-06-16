@@ -1,5 +1,6 @@
 import joblib
-import lightgbm as lgb
+
+from catboost import CatBoostClassifier
 
 from src.preprocessing.prepare_dataset import (
     prepare_dataset
@@ -9,7 +10,8 @@ from src.preprocessing.splitter import (
     split_dataset
 )
 
-def train_model():
+
+def train_catboost():
 
     print("Preparing dataset...")
 
@@ -19,8 +21,8 @@ def train_model():
 
     print(df.shape)
 
-    X_train, X_valid, y_train, y_valid = split_dataset(
-        df
+    X_train, X_valid, y_train, y_valid = (
+        split_dataset(df)
     )
 
     print(
@@ -31,22 +33,17 @@ def train_model():
         f"Validation shape: {X_valid.shape}"
     )
 
-    model = lgb.LGBMClassifier(
-
-        n_estimators=1362,
-        learning_rate=0.09460095501084868,
-        num_leaves=87,
-        max_depth=3,
-        min_child_samples=121,
-        subsample=0.7829257002191399,
-        colsample_bytree=0.6053061501418525,
-        reg_alpha=4.147506457250209,
-        reg_lambda=2.240416755904384,
-        random_state=42,
-        n_jobs=-1
+    model = CatBoostClassifier(
+        iterations=1000,
+        learning_rate=0.05,
+        depth=6,
+        loss_function="Logloss",
+        eval_metric="AUC",
+        random_seed=42,
+        verbose=100
     )
 
-    print("Training model...")
+    print("Training CatBoost...")
 
     model.fit(
         X_train,
@@ -55,8 +52,7 @@ def train_model():
 
     joblib.dump(
         model,
-        #"artifacts/models/lgbm_tuned.pkl"
-        "artifacts/models/lgbm_optuna_cv.pkl"
+        "artifacts/models/catboost_baseline.pkl"
     )
 
     print("Model saved.")

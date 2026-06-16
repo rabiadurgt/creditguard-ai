@@ -43,13 +43,13 @@ def objective(trial):
         "learning_rate": trial.suggest_float(
             "learning_rate",
             0.01,
-            0.1
+            0.15
         ),
 
         "num_leaves": trial.suggest_int(
             "num_leaves",
             20,
-            200
+            250
         ),
 
         "max_depth": trial.suggest_int(
@@ -158,7 +158,7 @@ if __name__ == "__main__":
 
     study.optimize(
         objective,
-        n_trials=10   #20
+        n_trials=50   #20
     )
 
     print("\nBest ROC-AUC:")
