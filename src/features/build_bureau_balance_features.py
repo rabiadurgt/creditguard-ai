@@ -42,6 +42,14 @@ def build_bureau_balance_features(
         df["MONTHS_BALANCE"] >= -12
     ].copy()
     
+    last_3m_df = df[
+        df["MONTHS_BALANCE"] >= -3
+    ].copy()
+
+    last_6m_df = df[
+        df["MONTHS_BALANCE"] >= -6
+    ].copy()
+
     last_status = (
         df.groupby("SK_ID_BUREAU")
         ["STATUS_NUM"]
@@ -68,6 +76,28 @@ def build_bureau_balance_features(
             )
         )
     )
+    last_3m_features = (
+        last_3m_df
+        .groupby("SK_ID_BUREAU")
+        .agg(
+            bb_last_3m_late_ratio=(
+                "is_late",
+                "mean"
+            )
+        )
+    )
+
+    last_6m_features = (
+        last_6m_df
+        .groupby("SK_ID_BUREAU")
+        .agg(
+            bb_last_6m_late_ratio=(
+                "is_late",
+                "mean"
+            )
+        )
+    )
+    
 
     last_late = (
         df[
@@ -106,7 +136,26 @@ def build_bureau_balance_features(
             bb_max_status=(
                 "STATUS_NUM",
                 "max"
+            ),
+            bb_total_late_count=(
+                "is_late",
+                "sum"
+            ),
+            bb_total_severe_late_count=(
+                "is_severe_late",
+                "sum"
+            ),
+
+            bb_ever_late=(
+                "is_late",
+                "max"
+            ),
+
+            bb_ever_severe_late=(
+                "is_severe_late",
+                "max"
             )
+            
         )
     
     )
@@ -114,6 +163,8 @@ def build_bureau_balance_features(
         bureau_balance_features
         .join(last_status)
         .join(recent_features)
+        .join(last_3m_features)
+        .join(last_6m_features)
         .join(last_late)
         .reset_index()
     )
@@ -184,7 +235,37 @@ def build_bureau_balance_features(
         bb_months_since_last_late=(
             "bb_months_since_last_late",
             "mean"
+        ),
+        bb_total_late_count=(
+            "bb_total_late_count",
+            "sum"
+        ),
+
+        bb_total_severe_late_count=(
+            "bb_total_severe_late_count",
+            "sum"
+        ),
+
+        bb_ever_late=(
+            "bb_ever_late",
+            "max"
+        ),
+
+        bb_ever_severe_late=(
+            "bb_ever_severe_late",
+            "max"
+        ),
+
+        bb_last_3m_late_ratio=(
+            "bb_last_3m_late_ratio",
+            "mean"
+        ),
+
+        bb_last_6m_late_ratio=(
+            "bb_last_6m_late_ratio",
+            "mean"
         )
+
     )
     .reset_index()
 )
