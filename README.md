@@ -13,8 +13,10 @@ The current baseline model was trained using the following data sources:
 #### 🤖 Model Configuration
 
 * **Algorithm:** LightGBM
-* **Validation Strategy:** Stratified Train/Validation Split
-* **Evaluation Metric:** ROC-AUC
+* Hyperparameter Optimization: Optuna
+* Validation Strategy: Stratified Train/Validation Split
+* Cross Validation: 5-Fold Stratified CV
+* Evaluation Metric: ROC-AUC
 
 #### 📊 Performance
 
@@ -25,8 +27,10 @@ The current baseline model was trained using the following data sources:
 | + POS Cash        | Delinquency & remaining installment features        | 0.7817     |
 | + Credit Card     | Credit card utilization & payment behavior features | 0.7829     |
 | + Bureau Balance  | Bureau repayment history features                   | 0.7830     |
-| Tuned LightGBM    | Manual tuning                                       | **0.7867** |
-| Optuna CV Tuned LightGBM | 5-Fold CV Hyperparameter Optimization | **0.7883** |
+| Tuned LightGBM    | Manual tuning                                       | 0.7867     |
+| Optuna CV Tuned LightGBM | 5-Fold CV Hyperparameter Optimization        | 0.7883     |
+| Bureau Features V2	| Advanced bureau ratios	                          | 0.7880 |
+| Previous Features V2| Advanced application behavior features              | **0.7885**|
 
 #### 📈 Performance Gain
 
@@ -39,7 +43,7 @@ The current baseline model was trained using the following data sources:
 | Credit Card Features          |      +0.0012 |
 | Bureau Balance Features       |      +0.0001 |
 
-**Current Best Validation ROC-AUC:** **0.7883**
+**Current Best Validation ROC-AUC:** **0.7885**
 ---
 ### 🔄 Cross Validation Results
 
@@ -47,15 +51,15 @@ To obtain a more reliable estimate of model performance, 5-Fold Stratified Cross
 
 | Fold | ROC-AUC |
 |--------|----------|
-| Fold 1 | 0.7790 |
-| Fold 2 | 0.7862 |
-| Fold 3 | 0.7817 |
-| Fold 4 | 0.7861 |
-| Fold 5 | 0.7788 |
+| Fold 1 | 0.7804 |
+| Fold 2 | 0.7870 |
+| Fold 3 | 0.7822 |
+| Fold 4 | 0.7850 |
+| Fold 5 | 0.7794 |
 
-**Mean ROC-AUC:** 0.7824
+**Mean ROC-AUC:** 0..7828
 
-**Standard Deviation:** 0.0033
+**Standard Deviation:** 0.0029
 
 The relatively low standard deviation indicates stable model behavior across different data splits.
 
@@ -72,8 +76,8 @@ The feature store currently contains:
 * Credit Card aggregated features
 * Bureau Balance aggregated features
 
-ℹ️ **Total Features:** 180 columns in feature store
-ℹ️ **Training Features:** 178 columns after preprocessing and target separation
+ℹ️ **Total Features:** 200 columns in feature store
+ℹ️ **Training Features:** 198 columns after preprocessing and target separation
 
 ---
 
@@ -81,26 +85,25 @@ The feature store currently contains:
 
 Among the engineered features, the following variables consistently rank among the most predictive:
 
-* `credit_term`
-* `annuity_credit_ratio`
-* `bureau_total_credit`
-* `bureau_debt_credit_ratio`
-* `bureau_total_debt`
-* `credit_income_ratio`
-* `annuity_income_ratio`
-* `age_years`
-* `prev_avg_application_amount`
-* `prev_avg_credit_amount`
-* `installment_count`
-* `avg_days_late`
-* `late_payment_ratio`
-* `total_payment_amount`
-* `pos_active_contracts`
-* `pos_avg_future_installments`
-* `cc_utilization_ratio`
-* `cc_avg_drawings`
-* `bb_record_count`
-* `bb_history_length`
+*  `bureau_avg_credit_per_loan`
+*  `bureau_total_credit`
+*  `bureau_total_debt`
+*  `bureau_credit_per_active_loan`
+*  `bureau_debt_per_active_loan`
+*  `bureau_active_loan_ratio`
+*  `credit_term`
+*  `annuity_credit_ratio`
+*  `credit_income_ratio`
+*  `prev_avg_application_amount`
+*  `prev_avg_credit_amount`
+*  `approval_rate`
+*  `refusal_rate`
+*  `installment_count`
+*  `avg_days_late`
+*  `late_payment_ratio`
+*  `pos_avg_future_installments`
+*  `cc_utilization_ratio`
+*  `bb_record_count`
 
 These features significantly improve the model's ability to capture customer credit risk patterns beyond the raw application data.
 
@@ -126,5 +129,16 @@ The SHAP analysis showed that, besides the well-known Home Credit external risk 
 * `bb_record_count`
 
 These results confirm that the engineered behavioral credit-risk features significantly contribute to the model's predictive performance and provide meaningful business insights regarding customer repayment behavior.
+
+🛠️ Tech Stack
++ Python
++ Pandas
++ NumPy
++ LightGBM
++ Optuna
++ Scikit-Learn
++ SHAP
++ Joblib
++ Parquet
 
 

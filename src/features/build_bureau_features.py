@@ -46,6 +46,51 @@ def create_bureau_features(
         .replace([np.inf, -np.inf],np.nan
         )
     )
+
+    bureau_features["bureau_avg_credit_per_loan"] = (
+        bureau_features["bureau_total_credit"]
+        /
+        (
+            bureau_features["bureau_active_loans"]
+            +
+            bureau_features["bureau_closed_loans"]
+        ).replace(0, np.nan)
+    )
+
+    bureau_features["bureau_avg_debt_per_loan"] = (
+        bureau_features["bureau_total_debt"]
+        /
+        (
+            bureau_features["bureau_active_loans"]
+            +
+            bureau_features["bureau_closed_loans"]
+        ).replace(0, np.nan)
+    )
+
+    bureau_features["bureau_active_loan_ratio"] = (
+        bureau_features["bureau_active_loans"]
+        /
+        (
+            bureau_features["bureau_active_loans"]
+            +
+            bureau_features["bureau_closed_loans"]
+        ).replace(0, np.nan)
+    )
+
+    bureau_features["bureau_credit_per_active_loan"] = (
+        bureau_features["bureau_total_credit"]
+        /
+        bureau_features["bureau_active_loans"]
+        .replace(0, np.nan)
+    )
+
+    bureau_features["bureau_debt_per_active_loan"] = (
+        bureau_features["bureau_total_debt"]
+        /
+        bureau_features["bureau_active_loans"]
+        .replace(0, np.nan)
+    )
+    
     
 
     return bureau_features

@@ -43,7 +43,9 @@ def train_model():
         reg_alpha=4.147506457250209,
         reg_lambda=2.240416755904384,
         random_state=42,
-        n_jobs=-1
+        n_jobs=-1,
+
+        verbosity=-1
     )
 
     print("Training model...")
