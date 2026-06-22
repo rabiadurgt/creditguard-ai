@@ -1,144 +1,175 @@
-### 🚀 Baseline Model Results
+# 🚀 CreditGuard AI — Credit Risk Modeling System
 
-The current baseline model was trained using the following data sources:
+CreditGuard AI is an end-to-end machine learning system designed to predict **loan default probability** using engineered financial features derived from multiple credit data sources.
 
-* **Application data**
-* **Bureau credit history aggregations**
-* **Previous application aggregations**
-* **Installments payment behavior**
-* **POS Cash balance history**
-* **Credit Card balance history**
-* **Bureau Balance repayment history**
+The system leverages **LightGBM + feature engineering + SHAP explainability** to build a production-ready credit scoring pipeline.
 
-#### 🤖 Model Configuration
+---
 
-* **Algorithm:** LightGBM
-* Hyperparameter Optimization: Optuna
-* Validation Strategy: Stratified Train/Validation Split
-* Cross Validation: 5-Fold Stratified CV
-* Evaluation Metric: ROC-AUC
+# 📊 Project Overview
 
-#### 📊 Performance
+The model is trained on multiple financial data sources:
 
-| Version           | Features                                            | ROC-AUC    |
-| ----------------- | --------------------------------------------------- | ---------- |
-| LightGBM Baseline | Application + Bureau + Previous                     | 0.7730     |
-| + Installments    | Payment behavior features                           | 0.7776     |
-| + POS Cash        | Delinquency & remaining installment features        | 0.7817     |
-| + Credit Card     | Credit card utilization & payment behavior features | 0.7829     |
-| + Bureau Balance  | Bureau repayment history features                   | 0.7830     |
-| Tuned LightGBM    | Manual tuning                                       | 0.7867     |
-| Optuna CV Tuned LightGBM | 5-Fold CV Hyperparameter Optimization        | 0.7883     |
-| Bureau Features V2	| Advanced bureau ratios	                          | 0.7880 |
-| Previous Features V2| Advanced application behavior features              | **0.7885**|
+- Application data
+- Bureau credit history
+- Previous loan applications
+- Installment payment history
+- POS-CASH balance history
+- Credit card balance history
+- Bureau balance repayment behavior
 
-#### 📈 Performance Gain
+Each dataset is transformed into **aggregated behavioral features** to capture customer credit risk patterns.
+
+---
+
+# 🤖 Model Configuration
+
+- **Algorithm:** LightGBM
+- **Hyperparameter Optimization:** Optuna
+- **Validation Strategy:** Stratified Train/Validation Split
+- **Cross Validation:** 5-Fold Stratified CV
+- **Evaluation Metric:** ROC-AUC
+
+---
+
+# 📈 Model Performance
+
+### 📊 Incremental Feature Engineering Impact
+
+| Version                      | Feature Set Description                              | ROC-AUC |
+|-----------------------------|-----------------------------------------------------|--------:|
+| Baseline LightGBM           | Application + Bureau + Previous                    | 0.7730  |
+| + Installments              | Payment behavior features                          | 0.7776  |
+| + POS Cash                  | Delinquency + installment behavior                | 0.7817  |
+| + Credit Card               | Credit utilization + payment behavior             | 0.7829  |
+| + Bureau Balance            | Repayment history features                        | 0.7830  |
+| Tuned LightGBM              | Manual hyperparameter tuning                      | 0.7867  |
+| Optuna CV Tuned Model       | 5-Fold cross-validation tuning                    | 0.7883  |
+| Bureau Features V2          | Advanced bureau ratios                            | 0.7880  |
+| Previous Features V2        | Advanced application behavior                     | **0.7885** |
+
+---
+
+# 📊 Performance Gain by Feature Groups
 
 | Feature Group                 | ROC-AUC Gain |
-| ----------------------------- | -----------: |
-| Bureau Features               |   +0.02~0.03 |
-| Previous Application Features |        +0.01 |
-| Installments Features         |      +0.0046 |
-| POS Cash Features             |      +0.0041 |
-| Credit Card Features          |      +0.0012 |
-| Bureau Balance Features       |      +0.0001 |
+|------------------------------|-------------:|
+| Bureau Features              | +0.02 ~ +0.03 |
+| Previous Application Features| +0.01        |
+| Installments Features        | +0.0046      |
+| POS Cash Features            | +0.0041      |
+| Credit Card Features         | +0.0012      |
+| Bureau Balance Features      | +0.0001      |
 
-**Current Best Validation ROC-AUC:** **0.7885**
 ---
-### 🔄 Cross Validation Results
 
-To obtain a more reliable estimate of model performance, 5-Fold Stratified Cross Validation was performed using the tuned LightGBM model.
+# 🔄 Cross Validation Results (5-Fold)
 
 | Fold | ROC-AUC |
-|--------|----------|
+|------|--------:|
 | Fold 1 | 0.7804 |
 | Fold 2 | 0.7870 |
 | Fold 3 | 0.7822 |
 | Fold 4 | 0.7850 |
 | Fold 5 | 0.7794 |
 
-**Mean ROC-AUC:** 0..7828
+**Mean ROC-AUC:** 0.7828  
+**Std ROC-AUC:** 0.0029  
 
-**Standard Deviation:** 0.0029
-
-The relatively low standard deviation indicates stable model behavior across different data splits.
-
-### 📦 Current Feature Store
-
-The feature store currently contains:
-
-* Raw application features
-* Application engineered features
-* Bureau aggregated features
-* Previous application aggregated features
-* Installments payment features
-* POS Cash aggregated features
-* Credit Card aggregated features
-* Bureau Balance aggregated features
-
-ℹ️ **Total Features:** 200 columns in feature store
-ℹ️ **Training Features:** 198 columns after preprocessing and target separation
+✔ Low variance indicates stable model performance across different splits.
 
 ---
 
-### 🏆 Most Important Engineered Features
+# 📦 Feature Store
 
-Among the engineered features, the following variables consistently rank among the most predictive:
+The feature store includes engineered features from all financial sources:
 
-*  `bureau_avg_credit_per_loan`
-*  `bureau_total_credit`
-*  `bureau_total_debt`
-*  `bureau_credit_per_active_loan`
-*  `bureau_debt_per_active_loan`
-*  `bureau_active_loan_ratio`
-*  `credit_term`
-*  `annuity_credit_ratio`
-*  `credit_income_ratio`
-*  `prev_avg_application_amount`
-*  `prev_avg_credit_amount`
-*  `approval_rate`
-*  `refusal_rate`
-*  `installment_count`
-*  `avg_days_late`
-*  `late_payment_ratio`
-*  `pos_avg_future_installments`
-*  `cc_utilization_ratio`
-*  `bb_record_count`
+- Application-level features
+- Bureau aggregated features
+- Previous application features
+- Installment payment features
+- POS-CASH features
+- Credit card features
+- Bureau balance features
 
-These features significantly improve the model's ability to capture customer credit risk patterns beyond the raw application data.
+**Total Features:** ~200  
+**Final Training Features:** 151 (after feature selection & pruning)
 
 ---
 
-### 🔍 Model Explainability (SHAP)
+# 🏆 Most Important Features
 
-To improve model transparency and interpretability, SHAP (SHapley Additive exPlanations) analysis was performed on the final LightGBM model.
+Top predictive features identified via SHAP + feature importance:
 
-#### Most Influential Features
+- EXT_SOURCE_1 / 2 / 3
+- pos_avg_future_installments
+- total_payment_amount
+- late_payment_ratio
+- avg_days_late
+- cc_utilization_ratio
+- bureau_debt_credit_ratio
+- credit_term
+- annuity_credit_ratio
+- refusal_rate
+- prev_avg_credit_amount
+- bb_record_count
 
-The SHAP analysis showed that, besides the well-known Home Credit external risk scores (`EXT_SOURCE_1`, `EXT_SOURCE_2`, `EXT_SOURCE_3`), several engineered features became among the most important predictors:
+These features capture **customer behavioral risk patterns** beyond raw application data.
 
-* `pos_avg_future_installments`
-* `total_payment_amount`
-* `late_payment_ratio`
-* `avg_days_late`
-* `cc_utilization_ratio`
-* `bureau_debt_credit_ratio`
-* `credit_term`
-* `annuity_credit_ratio`
-* `refusal_rate`
-* `bb_record_count`
+---
 
-These results confirm that the engineered behavioral credit-risk features significantly contribute to the model's predictive performance and provide meaningful business insights regarding customer repayment behavior.
+# 🔍 Model Explainability (SHAP)
 
-🛠️ Tech Stack
-+ Python
-+ Pandas
-+ NumPy
-+ LightGBM
-+ Optuna
-+ Scikit-Learn
-+ SHAP
-+ Joblib
-+ Parquet
+SHAP analysis confirms that both external risk scores and engineered behavioral features are critical in prediction.
 
+### Key Insights:
 
+- External sources (EXT_SOURCE) remain strong predictors
+- Behavioral credit patterns significantly improve model performance
+- Bureau + credit card utilization features strongly correlate with default risk
+
+---
+
+# 🛠️ Tech Stack
+
+- Python
+- Pandas
+- NumPy
+- LightGBM
+- Optuna
+- Scikit-learn
+- SHAP
+- FastAPI
+- Joblib
+- Parquet
+
+---
+
+# 🚀 System Architecture
+
+1. Data Extraction (raw Home Credit datasets)
+2. Feature Engineering (aggregation + behavioral metrics)
+3. Feature Selection (Correlation + SHAP pruning)
+4. Model Training (LightGBM + Optuna tuning)
+5. Feature Freeze (FINAL_FEATURES contract)
+6. API Deployment (FastAPI inference service)
+
+---
+
+# ⚡ API (Production Ready)
+
+- `/predict` → single risk score prediction
+- Input: JSON feature dictionary
+- Output:
+  - risk_score (0–1)
+  - risk_level (LOW / MEDIUM / HIGH)
+
+---
+
+# 📌 Key Achievement
+
+✔ End-to-end ML pipeline  
+✔ Feature engineering from 7 datasets  
+✔ Stable cross-validation performance  
+✔ SHAP explainability integration  
+✔ Production-ready FastAPI service  
