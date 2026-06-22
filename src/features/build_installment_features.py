@@ -22,9 +22,43 @@ def build_installment_features(
         df["days_late"] > 0
     ).astype(int)
 
+    df["is_severe_late"] = (
+        df["days_late"] >= 30
+    ).astype(int)
+
     df["payment_ratio"] = (
         df["AMT_PAYMENT"] / df["AMT_INSTALMENT"].replace(0,np.nan)
     )
+    recent_12m = df[
+        df["DAYS_INSTALMENT"] >= -365
+    ].copy()
+
+    recent_6m = df[
+        df["DAYS_INSTALMENT"] >= -180
+    ].copy()
+
+    recent_12m_features = (
+        recent_12m
+        .groupby("SK_ID_CURR")
+        .agg(
+            recent_12m_late_ratio=(
+                "is_late",
+                "mean"
+            )
+        )
+    )
+
+    recent_6m_features = (
+        recent_6m
+        .groupby("SK_ID_CURR")
+        .agg(
+            recent_6m_late_ratio=(
+                "is_late",
+                "mean"
+            )
+        )
+    )
+    
 
     installment_features = (
         df.groupby("SK_ID_CURR")
@@ -36,6 +70,10 @@ def build_installment_features(
             avg_days_late=(
                 "days_late",
                 "mean"
+            ),
+            median_days_late=(
+                "days_late",
+                "median"
             ),
             max_days_late=(
                 "days_late",
@@ -49,6 +87,14 @@ def build_installment_features(
                 "is_late",
                 "mean"
             ),
+            severe_late_count=(
+                "is_severe_late",
+                "sum"
+            ),
+            severe_late_ratio=(
+                "is_severe_late",
+                "mean"
+            ),
             avg_payment_ratio=(
                 "payment_ratio",
                 "mean"
@@ -57,8 +103,15 @@ def build_installment_features(
                 "AMT_PAYMENT",
                 "sum"
             )
+          
+            
         )
-        .reset_index()
     )
 
+    installment_features = (
+        installment_features
+        .join(recent_12m_features)
+        .join(recent_6m_features)
+        .reset_index()
+    )
     return installment_features

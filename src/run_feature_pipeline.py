@@ -20,7 +20,7 @@ from src.data_pipeline.load import save_dataframe
 from src.features.build_features import create_features
 from src.features.build_bureau_features import create_bureau_features
 from src.features.build_previous_features import create_previous_features
-from src.features.feature_store import merge_features
+from feature_store import merge_features
 
 from src.features.build_installment_features import(
     build_installment_features
@@ -34,7 +34,7 @@ from src.features.build_credit_card_features import (
 from src.features.build_bureau_balance_features import (
     build_bureau_balance_features
 )
-
+from src.features.feature_pruning import prune_features
 
 
 def main():
@@ -168,8 +168,10 @@ def main():
         credit_card_features,
         bureau_balance_features
     )
-
-    print(feature_store_df.shape)
+    print("Pruning features...")
+    feature_store_df = prune_features(feature_store_df)
+    print("After pruning:", feature_store_df.shape)
+    
 
     print("Saving feature store...")
 

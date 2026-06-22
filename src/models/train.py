@@ -1,13 +1,10 @@
 import joblib
 import lightgbm as lgb
 
-from src.preprocessing.prepare_dataset import (
-    prepare_dataset
-)
+from src.preprocessing.prepare_dataset import prepare_dataset
+from src.preprocessing.splitter import split_dataset
+from src.feature_store.final_features import FINAL_FEATURES
 
-from src.preprocessing.splitter import (
-    split_dataset
-)
 
 def train_model():
 
@@ -17,20 +14,32 @@ def train_model():
         "data/processed/train_feature_store.parquet"
     )
 
-    print(df.shape)
+    print("Full dataset shape:", df.shape)
 
-    X_train, X_valid, y_train, y_valid = split_dataset(
-        df
-    )
+    # -------------------------
+    # TARGET SPLIT
+    # -------------------------
+    X = df.drop(columns=["TARGET"])
+    y = df["TARGET"]
 
-    print(
-        f"Train shape: {X_train.shape}"
-    )
+    # -------------------------
+    # FEATURE FREEZE
+    # -------------------------
+    X = X[[c for c in FINAL_FEATURES if c in X.columns]]
 
-    print(
-        f"Validation shape: {X_valid.shape}"
-    )
+    print("After feature selection shape:", X.shape)
 
+    # -------------------------
+    # TRAIN / VALID SPLIT
+    # -------------------------
+    X_train, X_valid, y_train, y_valid = split_dataset(X, y)
+
+    print(f"Train shape: {X_train.shape}")
+    print(f"Validation shape: {X_valid.shape}")
+
+    # -------------------------
+    # MODEL
+    # -------------------------
     model = lgb.LGBMClassifier(
 
         n_estimators=1362,
@@ -44,7 +53,6 @@ def train_model():
         reg_lambda=2.240416755904384,
         random_state=42,
         n_jobs=-1,
-
         verbosity=-1
     )
 
@@ -55,16 +63,14 @@ def train_model():
         y_train
     )
 
+    # -------------------------
+    # SAVE MODEL
+    # -------------------------
     joblib.dump(
         model,
-        #"artifacts/models/lgbm_tuned.pkl"
         "artifacts/models/lgbm_optuna_cv.pkl"
     )
 
     print("Model saved.")
 
-    return (
-        model,
-        X_valid,
-        y_valid
-    )
+    return model, X_valid, y_valid
