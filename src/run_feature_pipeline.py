@@ -20,7 +20,7 @@ from src.data_pipeline.load import save_dataframe
 from src.features.build_features import create_features
 from src.features.build_bureau_features import create_bureau_features
 from src.features.build_previous_features import create_previous_features
-from feature_store import merge_features
+from src.features.feature_store import merge_features
 
 from src.features.build_installment_features import(
     build_installment_features

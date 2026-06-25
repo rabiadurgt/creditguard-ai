@@ -2,8 +2,7 @@ import joblib
 import pandas as pd
 
 from src.preprocessing.prepare_dataset import prepare_dataset
-from feature_store.final_features import FINAL_FEATURES
-
+from src.feature_store.final_features import FINAL_FEATURES
 
 MODEL_PATH = "artifacts/models/lgbm_optuna_cv.pkl"
 

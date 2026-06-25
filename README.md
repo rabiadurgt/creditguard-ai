@@ -145,7 +145,7 @@ SHAP analysis confirms that both external risk scores and engineered behavioral 
 
 ---
 
-# 🚀 System Architecture
+# 🚀 System Architectur
 
 1. Data Extraction (raw Home Credit datasets)
 2. Feature Engineering (aggregation + behavioral metrics)

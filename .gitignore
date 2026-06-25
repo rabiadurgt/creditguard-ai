@@ -1,21 +1,29 @@
-# Virtual Environment
+# =========================
+# VIRTUAL ENVIRONMENT
+# =========================
 venv/
+.env/
 
-# Environment Variables
-.env
-
-# Python
+# =========================
+# PYTHON CACHE
+# =========================
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# Jupyter
+# =========================
+# JUPYTER NOTEBOOK
+# =========================
 .ipynb_checkpoints/
 
-# Data
-data/raw/*
-data/interim/*
-data/processed/*
-data/feature_store/*
+# =========================
+# DATA (RAW / INTERIM / PROCESSED)
+# =========================
+data/raw/
+data/interim/
+data/processed/
+data/feature_store/
 
 # Keep folder structure
 !data/raw/.gitkeep
@@ -23,9 +31,14 @@ data/feature_store/*
 !data/processed/.gitkeep
 !data/feature_store/.gitkeep
 
-# Model Artifacts
-artifacts/models/*.pkl
+# =========================
+# MODEL ARTIFACTS (IMPORTANT FIX)
+# =========================
+artifacts/
+!artifacts/.gitkeep
 
-# OS
+# =========================
+# OS FILES
+# =========================
 .DS_Store
 Thumbs.db
