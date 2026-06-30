@@ -1,0 +1,7 @@
+Applicants with income below 100k and credit ratio > 2 are considered HIGH risk.
+Employment duration less than 1 year increases default probability significantly.
+High annuity-to-income ratio (>0.4) indicates liquidity risk.
+Car ownership reduces risk score moderately.
+Applicants with multiple children and low income are flagged for stricter evaluation.
+Birth age (younger applicants) correlates with higher volatility risk.
+Missing financial stability indicators lead to conservative scoring.

@@ -2,7 +2,7 @@
 # VIRTUAL ENVIRONMENT
 # =========================
 venv/
-.env/
+.env
 
 # =========================
 # PYTHON CACHE
@@ -18,27 +18,27 @@ __pycache__/
 .ipynb_checkpoints/
 
 # =========================
-# DATA (RAW / INTERIM / PROCESSED)
+# DATA
 # =========================
 data/raw/
 data/interim/
 data/processed/
 data/feature_store/
 
-# Keep folder structure
 !data/raw/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep
 !data/feature_store/.gitkeep
 
 # =========================
-# MODEL ARTIFACTS (IMPORTANT FIX)
+# MODEL ARTIFACTS
 # =========================
-artifacts/
-!artifacts/.gitkeep
+artifacts/models/*.pkl
+artifacts/features/
+artifacts/metrics/
 
 # =========================
-# OS FILES
+# OS
 # =========================
 .DS_Store
 Thumbs.db

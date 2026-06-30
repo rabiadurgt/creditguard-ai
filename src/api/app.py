@@ -5,6 +5,7 @@ import pandas as pd
 
 from src.pipeline.feature_pipeline import FeaturePipeline
 from src.explainability.shap_explainer import SHAPExplainer
+from src.rag.rag_service import RAGService
 
 app = FastAPI(title="CreditGuard AI API")
 
@@ -24,6 +25,7 @@ explainer = SHAPExplainer(model, background_df)
 
 pipeline = FeaturePipeline()
 
+rag = RAGService()
 
 # -------------------------
 # INPUT SCHEMA
@@ -93,4 +95,29 @@ def predict(request: CreditRequest):
         "risk_score": float(probability),
         "risk_level": risk_level,
         "explanations": explanations
+    }
+
+@app.post("/policy-explain")
+def explain_policy(request: CreditRequest):
+
+    df = pd.DataFrame([request.model_dump()])
+
+    df = pipeline.transform_application(df)
+
+    X = df.reindex(columns=MODEL_FEATURES, fill_value=0)
+
+    prob = model.predict_proba(X)[:, 1][0]
+
+    query = f"""
+    risk score {prob}
+    income {df['AMT_INCOME_TOTAL'].values[0]}
+    credit {df['AMT_CREDIT'].values[0]}
+    employment {df['DAYS_EMPLOYED'].values[0]}
+    """
+
+    policies = rag.retrieve(query)
+
+    return {
+        "risk_score": float(prob),
+        "policy_reasons": policies
     }
