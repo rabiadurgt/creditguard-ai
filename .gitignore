@@ -2,18 +2,18 @@
 # VIRTUAL ENVIRONMENT
 # =========================
 venv/
+.venv/
 .env
 
 # =========================
 # PYTHON CACHE
 # =========================
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
 
 # =========================
-# JUPYTER NOTEBOOK
+# JUPYTER
 # =========================
 .ipynb_checkpoints/
 
@@ -36,6 +36,32 @@ data/feature_store/
 artifacts/models/*.pkl
 artifacts/features/
 artifacts/metrics/
+
+# Keep metadata
+!artifacts/metadata/
+
+# =========================
+# LOGS
+# =========================
+logs/
+
+# =========================
+# STREAMLIT
+# =========================
+.streamlit/secrets.toml
+
+# =========================
+# TEST CACHE
+# =========================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================
+# IDE
+# =========================
+.vscode/
+.idea/
 
 # =========================
 # OS

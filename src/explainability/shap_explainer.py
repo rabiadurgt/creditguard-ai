@@ -6,22 +6,27 @@ class SHAPExplainer:
 
     def __init__(self, model, background_data: pd.DataFrame):
 
-        # LightGBM compatibility
         self.model = model
+        self.background_data = background_data
 
-        self.explainer = shap.TreeExplainer(
-            model,
-            data=background_data,
-            feature_perturbation="interventional"
-        )
-
+        self.explainer = None
         self.feature_names = background_data.columns
+
+    def _init_explainer(self):
+
+        if self.explainer is None:
+            self.explainer = shap.TreeExplainer(
+                self.model,
+                data=self.background_data,
+                feature_perturbation="interventional"
+            )
 
     def explain(self, X: pd.DataFrame, top_k: int = 5):
 
+        self._init_explainer()
+
         shap_values = self.explainer.shap_values(X)
 
-        # binary classification -> class 1
         if isinstance(shap_values, list):
             shap_values = shap_values[1]
 
@@ -30,7 +35,6 @@ class SHAPExplainer:
 
         explanation_pairs = list(zip(self.feature_names, values))
 
-        # absolute importance sorting
         explanation_pairs = sorted(
             explanation_pairs,
             key=lambda x: abs(x[1]),
@@ -39,9 +43,7 @@ class SHAPExplainer:
 
         top_features = explanation_pairs[:top_k]
 
-        explanations = [
+        return [
             f"{feat}: impact {round(val, 4)}"
             for feat, val in top_features
         ]
-
-        return explanations
