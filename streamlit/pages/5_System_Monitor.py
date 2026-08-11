@@ -88,74 +88,33 @@ c1, c2, c3, c4 = st.columns(4)
 
 with c1:
     st.metric(
-        "Total Predictions",
-        f"{total_predictions:,}"
+        "API Status",
+        "🟢 Healthy" if api_ok else "🔴 Down"
     )
 
 
 with c2:
     st.metric(
-        "Approve Rate",
-        f"{approve_rate:.1%}"
+        "Prediction Count",
+        f"{total_predictions:,}"
     )
 
 
 with c3:
     st.metric(
-        "Average Risk Score",
-        f"{avg_risk_score:.2%}"
-    )
-
-
-with c4:
-    st.metric(
-        "Avg Response Time",
+        "Average Latency",
         f"{avg_response_time:.0f} ms"
         if avg_response_time > 0
         else "-"
     )
 
-# ======================================================
-# CONFIDENCE + MODEL PERFORMANCE SUMMARY
-# ======================================================
 
-st.divider()
-
-left, right = st.columns(2)
-
-
-# ------------------------------
-# Confidence Monitoring
-# ------------------------------
-
-with left:
-
-    st.markdown(
-        '<div class="section-title">Confidence Monitoring</div>',
-        unsafe_allow_html=True
-    )
-
+with c4:
     st.metric(
         "Average Confidence",
         f"{avg_confidence:.2%}"
     )
 
-
-# ------------------------------
-# Model Performance
-# ------------------------------
-
-with right:
-
-    st.markdown(
-        '<div class="section-title">Model Performance</div>',
-        unsafe_allow_html=True
-    )
-
-    st.metric(
-        "ROC-AUC",
-        metadata["roc_auc"]
-    )
 
 # ======================================================
 # MODEL INFORMATION
@@ -166,82 +125,42 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
 st.markdown(
 f"""
-<div class="card">
+<div class="card model-info-card">
 
-<table style="width:100%; color:white; font-size:15px;">
+<div class="kpi-title">
+Dataset
+</div>
 
-<tr>
-<td><b>Dataset</b></td>
-<td>{metadata["dataset"]}</td>
-</tr>
+<div class="kpi-value">
+{metadata["dataset"]}
+</div>
 
-<tr>
-<td><b>Algorithm</b></td>
-<td>{metadata["model_name"]}</td>
-</tr>
+<br>
 
-<tr>
-<td><b>Validation</b></td>
-<td>{metadata["validation"]}</td>
-</tr>
+<div class="kpi-subtitle">
+<b>Algorithm:</b> {metadata["model_name"]}
+</div>
 
+<div class="kpi-subtitle">
+<b>Validation:</b> {metadata["validation"]}
+</div>
 
-<tr>
-<td><b>Training Samples</b></td>
-<td>{metadata["training_samples"]:,}</td>
-</tr>
+<div class="kpi-subtitle">
+<b>ROC-AUC:</b> {metadata["roc_auc"]}
+</div>
 
-</table>
+<div class="kpi-subtitle">
+<b>Training Samples:</b> {metadata["training_samples"]:,}
+</div>
+
 
 </div>
 """,
 unsafe_allow_html=True
 )
-
-st.divider()
-
-
-
-# ======================================================
-# LATEST PREDICTION
-# ======================================================
-
-if st.session_state.get("result"):
-
-    result = st.session_state.result
-
-    st.markdown(
-        '<div class="section-title">Latest Prediction</div>',
-        unsafe_allow_html=True
-    )
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    with c1:
-        st.metric(
-            "Decision",
-            result["decision"]["status"]
-        )
-
-    with c2:
-        st.metric(
-            "Risk",
-            f"{result['risk_score']:.2%}"
-        )
-
-    with c3:
-        st.metric(
-            "Confidence",
-            f"{result['confidence']:.2%}"
-        )
-
-    with c4:
-        st.metric(
-            "Prediction Time",
-            result.get("prediction_time", "-")
-        )
 
 # ======================================================
 # PREDICTION HISTORY
@@ -319,13 +238,13 @@ def decision_style(value):
 
     return ""
 
+history_display = history.copy()
+
 st.dataframe(
-    history.style.map(
-        decision_style,
-        subset=["decision"]
-    ),
+    history_display,
     use_container_width=True,
-    hide_index=True
+    hide_index=True,
+    height=400
 )
 
 
@@ -381,14 +300,41 @@ if not logs.empty:
     ]
 
 
-    st.dataframe(
-        high_risk.style.map(
-            decision_style,
-            subset=["decision"]
-        ),
-        use_container_width=True,
-        hide_index=True
-    )
+def row_style(row):
+
+    if row["decision"] == "APPROVE":
+        return [
+            "background-color:#DCFCE7;"
+            "color:#166534;"
+            "font-weight:600;"
+        ] * len(row)
+
+    elif row["decision"] == "REVIEW":
+        return [
+            "background-color:#FEF9C3;"
+            "color:#854D0E;"
+            "font-weight:600;"
+        ] * len(row)
+
+    elif row["decision"] == "REJECT":
+        return [
+            "background-color:#FEE2E2;"
+            "color:#991B1B;"
+            "font-weight:600;"
+        ] * len(row)
+
+    return [""] * len(row)
+
+
+
+st.dataframe(
+    high_risk.style.apply(
+        row_style,
+        axis=1
+    ),
+    use_container_width=True,
+    hide_index=True
+)
 
 # ======================================================
 # LOG ANALYTICS
@@ -492,23 +438,19 @@ if not logs.empty:
     st.divider()
 
     st.markdown(
-        '<div class="section-title">Risk Score Trend</div>',
+        '<div class="section-title">Risk Distribution Trend</div>',
         unsafe_allow_html=True
     )
 
-
     risk_trend = logs.copy()
-
 
     risk_trend["timestamp"] = pd.to_datetime(
         risk_trend["timestamp"]
     )
 
-
     risk_trend = risk_trend.sort_values(
         "timestamp"
     )
-
 
     fig = px.line(
         risk_trend,
@@ -516,7 +458,6 @@ if not logs.empty:
         y="risk_score",
         markers=True
     )
-
 
     fig.update_layout(
         xaxis_title="Time",
@@ -531,63 +472,11 @@ if not logs.empty:
         tickformat=".0%"
     )
 
-
     st.plotly_chart(
         fig,
         use_container_width=True
     )
 
-    # ------------------------------
-    # Confidence Trend
-    # ------------------------------
-
-    st.divider()
-
-    st.markdown(
-        '<div class="section-title">Confidence Trend</div>',
-        unsafe_allow_html=True
-    )
-
-
-    confidence_trend = logs.copy()
-
-
-    confidence_trend["timestamp"] = pd.to_datetime(
-        confidence_trend["timestamp"]
-    )
-
-
-    confidence_trend = confidence_trend.sort_values(
-        "timestamp"
-    )
-
-
-    fig = px.line(
-        confidence_trend,
-        x="timestamp",
-        y="confidence",
-        markers=True
-    )
-
-
-    fig.update_layout(
-        xaxis_title="Time",
-        yaxis_title="Confidence",
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        height=350
-    )
-
-
-    fig.update_yaxes(
-        tickformat=".0%"
-    )
-
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
 
     # ------------------------------
     # Response Time Trend

@@ -219,34 +219,29 @@ def policy_matrix(policies):
 
 def policy_evidence(policies):
 
-    for policy in policies:
+    if not policies:
+        st.info("No policies were retrieved.")
+        return
 
-        title = (
-            policy["policy"]
-            .replace("_", " ")
-            .title()
+    accent_colors = ["#3B82F6", "#22C55E", "#FACC15"]
+    blocks = []
+
+    for i, policy in enumerate(policies):
+        title = policy["policy"].replace("_", " ").title()
+        reason = policy.get("reason", "No explanation available.")
+        color = accent_colors[i % len(accent_colors)]
+
+        blocks.append(
+            f'<div class="policy-evidence-card" style="border-left-color:{color};">'
+            f'<div class="policy-evidence-title">'
+            f'<span class="policy-evidence-icon" style="background:{color};"></span>'
+            f'{title}'
+            f'</div>'
+            f'<div class="policy-evidence-text">{reason}</div>'
+            f'</div>'
         )
 
-        st.markdown(f"""
-<div style="
-padding:16px;
-margin-bottom:15px;
-background:white;
-border-radius:12px;
-border:1px solid #e5e7eb;
-">
-
-<h4>
-📚 {title}
-</h4>
-
-<p>
-{policy["reason"]}
-</p>
-
-</div>
-""", unsafe_allow_html=True)
-        
+    st.markdown("".join(blocks), unsafe_allow_html=True)
 
 
 

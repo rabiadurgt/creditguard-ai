@@ -5,12 +5,10 @@ import streamlit as st
 from components.dashboard import (
     applicant_overview,
     ai_recommendation_card,
-    shap_bar_chart,
+    _kpi_card,
 )
 
-from components.policy import (
-    policy_evidence,
-)
+from components.shared import explain_shap
 
 
 def render_dashboard(result, payload):
@@ -27,16 +25,24 @@ def render_dashboard(result, payload):
     # EXECUTIVE SUMMARY
     # ======================================================
 
-    from components.dashboard import _kpi_card
-
-    st.markdown('<div class="section-title">Executive Summary</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-title">Executive Summary</div>',
+        unsafe_allow_html=True
+    )
 
     col1, col2, col3, col4 = st.columns(4)
 
+
     with col1:
-        ai_recommendation_card(result, show_title=False)
+
+        ai_recommendation_card(
+            result,
+            show_title=False
+        )
+
 
     with col2:
+
         _kpi_card(
             title="Default Probability",
             value=f"{result['risk_score']:.2%}",
@@ -44,14 +50,28 @@ def render_dashboard(result, payload):
             subtitle="Estimated default risk"
         )
 
+
     with col3:
 
-        credit_amount = payload.get("AMT_CREDIT", 0)
-        annual_income = payload.get("AMT_INCOME_TOTAL", 0)
+        credit_amount = payload.get(
+            "AMT_CREDIT",
+            0
+        )
+
+        annual_income = payload.get(
+            "AMT_INCOME_TOTAL",
+            0
+        )
+
 
         if annual_income > 0:
-            dti = (credit_amount / annual_income) * 100
+
+            dti = (
+                credit_amount / annual_income
+            ) * 100
+
         else:
+
             dti = 0.0
 
 
@@ -62,8 +82,10 @@ def render_dashboard(result, payload):
             subtitle="Credit-to-income ratio",
             progress=dti
         )
-        
+
+
     with col4:
+
         _kpi_card(
             title="Model Confidence",
             value=f"{result['confidence']:.2%}",
@@ -72,39 +94,111 @@ def render_dashboard(result, payload):
         )
 
 
+    # ======================================================
+    # RISK SUMMARY
+    # ======================================================
+
     st.divider()
 
-    st.info(
-    """
-    **Model Validation**
 
-    Predictions are produced by a **LightGBM** model trained on the **Home Credit Default Risk** dataset.
-
-    • Validation Strategy: **5-Fold Cross Validation**
-
-    • ROC-AUC: **0.78**
-    
-    • Training Samples: **307,511**
-
-    These metrics indicate the model has been evaluated on unseen data and the prediction is not based solely on training performance.
-    """
+    st.markdown(
+        '<div class="section-title">⚠️ Risk Summary</div>',
+        unsafe_allow_html=True
     )
-    
-    # ======================================================
-    # DETAILED ANALYSIS
-    # ======================================================
 
-    st.markdown('<div class="section-title">Detailed Analysis</div>', unsafe_allow_html=True)
 
-    left, spacer, right = st.columns([1,0.06,1])
+    positive_factors = []
+    negative_factors = []
 
-    with left:
-        shap_bar_chart(result["explanations"])
 
-    with right:
-        st.markdown(
-            '<div class="section-title">Policy Validation</div>',
-            unsafe_allow_html=True
-        )
-        with st.container(key="policy_card"):
-            policy_evidence(result["policies"])
+    for exp in result.get("explanations",[]):
+
+        try:
+            feature = exp.split(": impact")[0].strip()
+
+
+            impact = float(
+                exp.split(": impact")[1]
+            )
+
+
+            explanation = explain_shap(
+                feature,
+                impact
+            )
+
+
+            if impact < 0:
+
+                positive_factors.append(explanation)
+
+            else:
+
+                negative_factors.append(explanation)
+
+
+        except Exception:
+
+            continue
+
+
+
+    col1, col2 = st.columns(2)
+
+
+    # ------------------------------
+    # Positive Factors
+    # ------------------------------
+
+    with col1:
+
+        st.markdown("### 🟢 Positive Factors")
+
+        if positive_factors:
+
+            for item in positive_factors[:3]:
+
+                st.markdown(
+                    f"""
+<div class="driver-positive">
+
+🟢 {item}
+
+</div>
+""",
+                    unsafe_allow_html=True
+                )
+
+        else:
+
+            st.info(
+                "No strong positive risk drivers detected."
+            )
+
+
+    # ------------------------------
+    # Risk Factors
+    # ------------------------------
+
+    with col2:
+
+        st.markdown("### 🔴 Risk Factors")
+
+        if negative_factors:
+
+            for item in negative_factors[:3]:
+
+                st.markdown(
+                    f"""
+<div class="driver-negative">
+
+🔴 {item}
+
+</div>
+""",
+                    unsafe_allow_html=True
+                )
+
+        else:
+
+            st.success("No significant risk drivers detected.")

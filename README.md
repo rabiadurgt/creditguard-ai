@@ -1,175 +1,294 @@
-# 🚀 CreditGuard AI — Credit Risk Modeling System
+# 🛡️ CreditGuard AI
 
-CreditGuard AI is an end-to-end machine learning system designed to predict **loan default probability** using engineered financial features derived from multiple credit data sources.
+### AI-Powered Credit Risk Assessment & Decision Support System
 
-The system leverages **LightGBM + feature engineering + SHAP explainability** to build a production-ready credit scoring pipeline.
+CreditGuard AI is an end-to-end credit risk assessment platform that combines **machine learning, explainable AI, RAG-based policy intelligence, business rules, and an AI decision agent**.
 
----
+The system goes beyond default prediction by transforming model risk scores into an auditable:
 
-# 📊 Project Overview
+**APPROVE · REVIEW · REJECT**
 
-The model is trained on multiple financial data sources:
-
-- Application data
-- Bureau credit history
-- Previous loan applications
-- Installment payment history
-- POS-CASH balance history
-- Credit card balance history
-- Bureau balance repayment behavior
-
-Each dataset is transformed into **aggregated behavioral features** to capture customer credit risk patterns.
+decision with explanations, policy matches, triggered rules, confidence information, and monitoring.
 
 ---
 
-# 🤖 Model Configuration
+## 🏗️ Architecture
 
-- **Algorithm:** LightGBM
-- **Hyperparameter Optimization:** Optuna
-- **Validation Strategy:** Stratified Train/Validation Split
-- **Cross Validation:** 5-Fold Stratified CV
-- **Evaluation Metric:** ROC-AUC
+![CreditGuard AI Architecture](assets/architecture.png)
 
 ---
 
-# 📈 Model Performance
+## ✨ Key Features
 
-### 📊 Incremental Feature Engineering Impact
+* **LightGBM Credit Risk Model** — Default probability prediction with Optuna optimization and 5-fold cross-validation.
+* **Hybrid Decision Agent** — Combines ML risk, business rules, and policy evaluation.
+* **RAG Policy Intelligence** — Retrieves and reranks relevant credit policies using FAISS and embeddings.
+* **Explainable AI** — SHAP-based feature contribution analysis.
+* **FastAPI Inference API** — Real-time credit risk prediction through REST endpoints.
+* **Streamlit Dashboard** — Interactive risk assessment, explanations, policy exploration, and system monitoring.
+* **Audit & Monitoring** — Prediction logs, decision distribution, confidence, latency, and model metadata.
 
-| Version                      | Feature Set Description                              | ROC-AUC |
-|-----------------------------|-----------------------------------------------------|--------:|
-| Baseline LightGBM           | Application + Bureau + Previous                    | 0.7730  |
-| + Installments              | Payment behavior features                          | 0.7776  |
-| + POS Cash                  | Delinquency + installment behavior                | 0.7817  |
-| + Credit Card               | Credit utilization + payment behavior             | 0.7829  |
-| + Bureau Balance            | Repayment history features                        | 0.7830  |
-| Tuned LightGBM              | Manual hyperparameter tuning                      | 0.7867  |
-| Optuna CV Tuned Model       | 5-Fold cross-validation tuning                    | 0.7883  |
-| Bureau Features V2          | Advanced bureau ratios                            | 0.7880  |
-| Previous Features V2        | Advanced application behavior                     | **0.7885** |
+### Decision Thresholds
 
----
+| Final Risk Score | Decision       |
+| ---------------: | -------------- |
+|         `< 0.10` | 🟢 **APPROVE** |
+|  `0.10 – < 0.25` | 🟡 **REVIEW**  |
+|         `≥ 0.25` | 🔴 **REJECT**  |
 
-# 📊 Performance Gain by Feature Groups
-
-| Feature Group                 | ROC-AUC Gain |
-|------------------------------|-------------:|
-| Bureau Features              | +0.02 ~ +0.03 |
-| Previous Application Features| +0.01        |
-| Installments Features        | +0.0046      |
-| POS Cash Features            | +0.0041      |
-| Credit Card Features         | +0.0012      |
-| Bureau Balance Features      | +0.0001      |
+> These are project-specific decision thresholds, not universal banking standards.
 
 ---
 
-# 🔄 Cross Validation Results (5-Fold)
+## 🔍 Explainable AI
 
-| Fold | ROC-AUC |
-|------|--------:|
-| Fold 1 | 0.7804 |
-| Fold 2 | 0.7870 |
-| Fold 3 | 0.7822 |
-| Fold 4 | 0.7850 |
-| Fold 5 | 0.7794 |
+SHAP is used **only for model explainability** and is intentionally excluded from the risk and decision score.
 
-**Mean ROC-AUC:** 0.7828  
-**Std ROC-AUC:** 0.0029  
+```text
+Applicant Features → LightGBM → Default Probability
+                              ↓
+                             SHAP
+                              ↓
+                    Feature Contributions
+```
 
-✔ Low variance indicates stable model performance across different splits.
-
----
-
-# 📦 Feature Store
-
-The feature store includes engineered features from all financial sources:
-
-- Application-level features
-- Bureau aggregated features
-- Previous application features
-- Installment payment features
-- POS-CASH features
-- Credit card features
-- Bureau balance features
-
-**Total Features:** ~200  
-**Final Training Features:** 151 (after feature selection & pruning)
+The Explainable AI dashboard highlights the features contributing most strongly to each prediction.
 
 ---
 
-# 🏆 Most Important Features
+## 📚 RAG & Policy Intelligence
 
-Top predictive features identified via SHAP + feature importance:
+The policy knowledge base currently includes:
 
-- EXT_SOURCE_1 / 2 / 3
-- pos_avg_future_installments
-- total_payment_amount
-- late_payment_ratio
-- avg_days_late
-- cc_utilization_ratio
-- bureau_debt_credit_ratio
-- credit_term
-- annuity_credit_ratio
-- refusal_rate
-- prev_avg_credit_amount
-- bb_record_count
+```text
+data/policies/
+├── policy_income.md
+├── policy_credit.md
+├── policy_employment.md
+├── policy_family.md
+└── policy_collateral.md
+```
 
-These features capture **customer behavioral risk patterns** beyond raw application data.
+RAG pipeline:
 
----
-
-# 🔍 Model Explainability (SHAP)
-
-SHAP analysis confirms that both external risk scores and engineered behavioral features are critical in prediction.
-
-### Key Insights:
-
-- External sources (EXT_SOURCE) remain strong predictors
-- Behavioral credit patterns significantly improve model performance
-- Bureau + credit card utilization features strongly correlate with default risk
-
----
-
-# 🛠️ Tech Stack
-
-- Python
-- Pandas
-- NumPy
-- LightGBM
-- Optuna
-- Scikit-learn
-- SHAP
-- FastAPI
-- Joblib
-- Parquet
+```text
+Documents
+   ↓
+Chunking
+   ↓
+Embedding
+   ↓
+FAISS
+   ↓
+Retrieval
+   ↓
+LLM Reranking
+   ↓
+Policy Matching
+```
 
 ---
 
-# 🚀 System Architectur
+## 📊 Machine Learning
 
-1. Data Extraction (raw Home Credit datasets)
-2. Feature Engineering (aggregation + behavioral metrics)
-3. Feature Selection (Correlation + SHAP pruning)
-4. Model Training (LightGBM + Optuna tuning)
-5. Feature Freeze (FINAL_FEATURES contract)
-6. API Deployment (FastAPI inference service)
+### Dataset
+
+**Home Credit Default Risk**
+
+The pipeline combines application, bureau, previous application, installment, POS-CASH, credit card, and bureau balance information into engineered financial and behavioral features.
+
+Examples:
+
+```text
+credit_income_ratio
+annuity_income_ratio
+credit_term
+age_years
+employment_years
+bureau_total_debt
+bureau_debt_credit_ratio
+approval_rate
+refusal_rate
+```
+
+### Model Performance
+
+| Metric       |        Result |
+| ------------ | ------------: |
+| Mean ROC-AUC |    **0.7828** |
+| Std          |    **0.0029** |
+| Validation   | **5-Fold CV** |
+
+> Development evaluation results; not production lending performance.
 
 ---
 
-# ⚡ API (Production Ready)
+## 🖥️ Dashboard
 
-- `/predict` → single risk score prediction
-- Input: JSON feature dictionary
-- Output:
-  - risk_score (0–1)
-  - risk_level (LOW / MEDIUM / HIGH)
+| Page                   | Purpose                          |
+| ---------------------- | -------------------------------- |
+| 📊 Executive Dashboard | Credit risk KPIs and overview    |
+| 🔍 Explainable AI      | SHAP prediction explanations     |
+| 🤖 AI Decision Agent   | Credit decision and reasoning    |
+| 📚 Policy Explorer     | Policy search and inspection     |
+| 🖥️ System Monitor     | Prediction and system monitoring |
+
+![Executive Dashboard](assets/screenshots/01_executive_dashboard.png)
+
+![Risk Prediction](assets/screenshots/02_risk_prediction_result.png)
 
 ---
 
-# 📌 Key Achievement
+## 🧰 Technology Stack
 
-✔ End-to-end ML pipeline  
-✔ Feature engineering from 7 datasets  
-✔ Stable cross-validation performance  
-✔ SHAP explainability integration  
-✔ Production-ready FastAPI service  
+**Machine Learning**
+`Python · LightGBM · Scikit-learn · Optuna · Pandas · NumPy · SHAP`
+
+**Generative AI / RAG**
+`FAISS · Sentence Transformers · MiniLM · LLM Reranking · RAG`
+
+**Backend**
+`FastAPI · Uvicorn · Pydantic`
+
+**Frontend**
+`Streamlit · Plotly`
+
+**Development**
+`Git · GitHub · Jupyter`
+
+---
+
+## 📁 Project Structure
+
+```text
+creditguard-ai/
+├── assets/
+├── data/
+│   └── policies/
+├── notebooks/
+├── src/
+│   ├── agent/
+│   ├── api/
+│   ├── explainability/
+│   ├── rag/
+│   └── utils/
+├── streamlit/
+│   ├── components/
+│   ├── pages/
+│   ├── ui/
+│   └── utils/
+├── artifacts/
+├── requirements.txt
+├── .gitignore
+└── README.md
+```
+
+---
+
+## 🚀 Installation
+
+```bash
+git clone https://github.com/rabiadurgt/creditguard-ai.git
+cd creditguard-ai
+
+python -m venv venv
+```
+
+### Windows
+
+```bash
+venv\Scripts\activate
+```
+
+### Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## ▶️ Run the Application
+
+### 1. Start FastAPI
+
+From the project root:
+
+```bash
+uvicorn src.api.app:app --reload
+```
+
+API:
+
+```text
+http://127.0.0.1:8000
+```
+
+Swagger:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+### 2. Start Streamlit
+
+Open another terminal:
+
+```bash
+cd streamlit
+streamlit run Home.py
+```
+
+Dashboard:
+
+```text
+http://localhost:8501
+```
+
+---
+
+## 🔌 API
+
+### `POST /predict`
+
+Real-time credit risk prediction endpoint returning:
+
+`Risk Score · Decision · Risk Level · Confidence · Explanations · Policy Matches · Audit Information · Response Time`
+
+Interactive API documentation:
+
+`http://127.0.0.1:8000/docs`
+---
+
+## 🔮 Future Improvements
+
+* Automated model retraining
+* Drift monitoring
+* Docker / CI/CD deployment
+* Model registry
+* RAG evaluation
+* Human-in-the-loop review
+* Fairness analysis
+
+---
+
+## ⚠️ Disclaimer
+
+CreditGuard AI is an educational and engineering project demonstrating **ML, Explainable AI, RAG, AI agents, and MLOps-oriented system design**.
+
+The decision thresholds and policies are project-specific assumptions and should not be used for real-world lending decisions without appropriate validation, regulatory review, risk governance, and domain expertise.
+
+---
+
+## 👩‍💻 Author
+
+**Rabia Durgut**
+Computer Engineering Graduate | AI Engineer
+
+[GitHub](https://github.com/rabiadurgt) · [LinkedIn](https://www.linkedin.com/in/rabiadurgut/)
+
+---
+
+### ⭐ CreditGuard AI
+
+**From default prediction to explainable, policy-aware credit decisions.**

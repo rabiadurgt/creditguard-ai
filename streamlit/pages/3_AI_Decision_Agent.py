@@ -4,10 +4,8 @@ from styles import load_css
 
 from components import (
     executive_recommendation,
-    confidence_gauge,
     reasoning_chain,
     policy_evidence,
-    decision_justification,
     audit_trail
 )
 
@@ -57,59 +55,22 @@ st.divider()
 # EXECUTIVE RECOMMENDATION
 # =====================================================
 
-left, right = st.columns(
-    [2, 1],
-    gap="large"
-)
-
-with left:
-
-    executive_recommendation(result)
-
-with right:
-
-    confidence_gauge(
-        result["confidence"]
-    )
-
-# =====================================================
-# AI REASONING
-# =====================================================
+st.subheader("🧠 Executive Decision")
+executive_recommendation(result)
 
 st.divider()
 
-st.subheader("🧠 AI Reasoning Process")
+col1, col2 = st.columns(2)
 
-reasoning_chain(result)
+with col1:
+    st.subheader("🧠 AI Reasoning Process")
+    reasoning_chain(result)
 
-# =====================================================
-# POLICY EVIDENCE
-# =====================================================
-
-st.divider()
-
-st.subheader("📚 Policy Evidence")
-
-policy_evidence(
-    result["policies"]
-)
-
-# =====================================================
-# DECISION JUSTIFICATION
-# =====================================================
-
-st.divider()
-
-st.subheader("📝 Decision Justification")
-
-decision_justification(result)
-
-# =====================================================
-# AUDIT TRAIL
-# =====================================================
+with col2:
+    st.subheader("📚 Retrieved Policy Evidence")
+    policy_evidence(result["policies"])
 
 st.divider()
 
 st.subheader("🛡️ Audit Trail")
-
 audit_trail(result)

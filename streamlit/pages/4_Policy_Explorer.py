@@ -5,7 +5,6 @@ from styles import load_css
 from components import (
     policy_summary_cards,
     show_retrieved_policies,
-    show_policy_reasoning,
     policy_similarity_chart,
     policy_matrix
 )
@@ -66,22 +65,14 @@ st.divider()
 # RETRIEVED POLICIES
 # ==================================================
 
-left, right = st.columns(
-    [2, 1],
-    gap="large"
+st.subheader(
+    "📄 Retrieved Documents"
 )
 
-with left:
 
-    st.subheader("📄 Retrieved Internal Policies")
-
-    show_retrieved_policies(policies)
-
-with right:
-
-    st.subheader("🧠 Retrieval Reasoning")
-
-    show_policy_reasoning(policies)
+show_retrieved_policies(
+    policies
+)
 
 # ==================================================
 # POLICY SIMILARITY

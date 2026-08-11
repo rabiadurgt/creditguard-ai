@@ -122,29 +122,16 @@ def top_risk_cards(explanations):
     for _, row in df.head(5).iterrows():
 
         color = "#ef4444" if row["Impact"] > 0 else "#22c55e"
-
         icon = "🔺" if row["Impact"] > 0 else "🟢"
 
         st.markdown(
-f"""
-<div class="card" style="margin-bottom:12px;">
-
-<div class="kpi-title">
-{icon} {row["Feature"]}
-</div>
-
-<div class="kpi-value" style="color:{color};">
-{row["Impact"]:.3f}
-</div>
-
-<div class="kpi-subtitle">
-SHAP Impact Score
-</div>
-
-</div>
-""",
-unsafe_allow_html=True
-)
+            f'<div class="risk-driver-card">'
+            f'<div class="kpi-title">{icon} {row["Feature"]}</div>'
+            f'<div class="kpi-value" style="color:{color};">{row["Impact"]:.3f}</div>'
+            f'<div class="kpi-subtitle">SHAP Impact Score</div>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
 
 def natural_language_explanations(explanations, compact=False):
 
@@ -239,28 +226,88 @@ in business-friendly language.
 
 def feature_importance_table(explanations):
 
-    df = parse_explanations(explanations)
+    import streamlit as st
+    import html
 
-    df["Absolute Impact"] = df["Impact"].abs()
+    rows = []
 
-    df = df.sort_values(
-        "Absolute Impact",
-        ascending=False
-    )
+    parsed = []
 
-    df.insert(
-        0,
-        "Rank",
-        range(1, len(df) + 1)
-    )
+    for exp in explanations[:5]:
 
-    with st.container(key="feature_table_card"):
+        try:
+            feature = exp.split(": impact")[0].strip()
+            impact = float(exp.split(": impact")[1].strip())
+            parsed.append((feature, impact))
+        except Exception:
+            continue
 
-        st.dataframe(
-            df,
-            use_container_width=True,
-            hide_index=True
+    if not parsed:
+        return
+
+    max_impact = max(abs(impact) for _, impact in parsed)
+
+    for rank, (feature, impact) in enumerate(parsed, start=1):
+
+        if impact < 0:
+
+            direction = "Risk Reducing"
+            direction_class = "risk-reducing"
+            dot_class = "dot-green"
+            bar_class = "bar-green"
+
+        else:
+
+            direction = "Risk Increasing"
+            direction_class = "risk-increasing"
+            dot_class = "dot-red"
+            bar_class = "bar-red"
+
+        magnitude = (
+            abs(impact) / max_impact * 100
+            if max_impact > 0
+            else 0
         )
+
+        rows.append(
+            f'<tr>'
+            f'<td class="rank-cell">{rank}</td>'
+            f'<td class="feature-cell">{html.escape(feature)}</td>'
+            f'<td class="impact-cell">'
+            f'<div class="impact-number">{impact:.3f}</div>'
+            f'<div class="impact-track">'
+            f'<div class="impact-bar {bar_class}" style="width: {magnitude:.0f}%;"></div>'
+            f'</div>'
+            f'</td>'
+            f'<td class="direction-cell">'
+            f'<span class="direction-badge {direction_class}">'
+            f'<span class="direction-dot {dot_class}"></span>'
+            f'{direction}'
+            f'</span>'
+            f'</td>'
+            f'</tr>'
+        )
+
+    table_html = (
+        '<div class="feature-table-card">'
+        '<div class="feature-table-wrapper">'
+        '<table class="feature-impact-table">'
+        '<colgroup>'
+        '<col style="width: 70px;">'
+        '<col style="width: 34%;">'
+        '<col style="width: 28%;">'
+        '<col style="width: 32%;">'
+        '</colgroup>'
+        '<thead><tr>'
+        '<th>Rank</th><th>Feature</th><th>Impact</th><th>Direction</th>'
+        '</tr></thead>'
+        f'<tbody>{"".join(rows)}</tbody>'
+        '</table>'
+        '</div>'
+        '</div>'
+    )
+
+    st.markdown(table_html, unsafe_allow_html=True)
 
 def prediction_breakdown(explanations):
 
