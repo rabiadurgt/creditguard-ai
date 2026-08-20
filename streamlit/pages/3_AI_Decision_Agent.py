@@ -55,7 +55,7 @@ st.divider()
 # EXECUTIVE RECOMMENDATION
 # =====================================================
 
-st.subheader("🧠 Executive Decision")
+st.subheader("Executive Decision")
 executive_recommendation(result)
 
 st.divider()
@@ -63,7 +63,7 @@ st.divider()
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("🧠 AI Reasoning Process")
+    st.subheader("AI Reasoning Process")
     reasoning_chain(result)
 
 with col2:

@@ -4,8 +4,9 @@ from styles import load_css
 
 from components import (
     policy_summary_cards,
+    policy_knowledge_base,
     show_retrieved_policies,
-    policy_similarity_chart,
+    policy_ranking_chart,
     policy_matrix
 )
 
@@ -15,81 +16,79 @@ st.set_page_config(
     layout="wide"
 )
 
-st.markdown(
-    load_css(),
-    unsafe_allow_html=True
-)
+st.markdown(load_css(), unsafe_allow_html=True)
 
-# ==================================================
+# =====================================================
 # PAGE HEADER
-# ==================================================
+# =====================================================
 
 st.title("📚 Policy Explorer")
 
 st.caption(
-    "Review the internal credit policies retrieved by the AI during the decision-making process."
+    "Explore the credit policies available to the RAG system "
+    "and the policies retrieved for the current application."
 )
 
-# ==================================================
+# =====================================================
 # SESSION CHECK
-# ==================================================
+# =====================================================
 
 if "result" not in st.session_state:
-
-    st.warning(
-        "Please run a credit analysis from the Executive Dashboard first."
-    )
-
+    st.warning("Please run a credit analysis from the Executive Dashboard first.")
     st.stop()
 
 result = st.session_state["result"]
 policies = result.get("policies", [])
 
-if not policies:
+# =====================================================
+# POLICY SUMMARY
+# =====================================================
 
-    st.info(
-        "No relevant policies were retrieved for this application."
-    )
-
-    st.stop()
-
-# ==================================================
-# POLICY OVERVIEW
-# ==================================================
-
-policy_summary_cards(policies)
+policy_summary_cards(policies, total_policies=5)
 
 st.divider()
 
-# ==================================================
-# RETRIEVED POLICIES
-# ==================================================
+# =====================================================
+# POLICY KNOWLEDGE BASE
+# =====================================================
 
-st.subheader(
-    "📄 Retrieved Documents"
-)
+with st.container(key="policy_explorer_page"):
+
+    st.subheader("📚 Policy Knowledge Base")
+    st.caption("Internal credit policies available to the RAG system.")
+
+    policy_knowledge_base()
+
+    st.divider()
+
+# =====================================================
+# RETRIEVED POLICY EVIDENCE / RETRIEVAL RANKING
+# =====================================================
+    if not policies:
+        st.info("No relevant policies were retrieved for this application.")
+        st.stop()
+
+    col_evidence, col_ranking = st.columns(2)
 
 
-show_retrieved_policies(
-    policies
-)
+    with col_evidence:
+        st.subheader("📄 Retrieved Policy Evidence")
+        st.caption("Policies retrieved and ranked for the current application.")
+        show_retrieved_policies(policies)
 
-# ==================================================
-# POLICY SIMILARITY
-# ==================================================
+    with col_ranking:
+        st.subheader("📈 Retrieved Policy Ranking")
+        st.caption("Ranking scores produced by the policy retrieval and reranking pipeline.")
+        policy_ranking_chart(policies)
 
-st.divider()
+    st.divider()
 
-st.subheader("📈 Policy Retrieval Similarity")
 
-policy_similarity_chart(policies)
+# =====================================================
+# POLICY EVALUATION
+# =====================================================
 
-# ==================================================
-# POLICY COMPLIANCE MATRIX
-# ==================================================
-
-st.divider()
-
-st.subheader("📋 Policy Compliance Matrix")
+st.subheader("📋 Policy Evaluation")
+st.caption("Overview of all five policies and whether they were retrieved for this application.")
 
 policy_matrix(policies)

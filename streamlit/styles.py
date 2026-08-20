@@ -652,8 +652,8 @@ AI REASONING TIMELINE
 }
 
 .reasoning-step {
-    display: flex;
-    gap: 16px;
+    position: relative;
+    padding-left: 44px;
     padding-bottom: 26px;
 }
 
@@ -662,6 +662,10 @@ AI REASONING TIMELINE
 }
 
 .reasoning-step-marker {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -672,36 +676,71 @@ AI REASONING TIMELINE
     height: 30px;
     min-width: 30px;
     border-radius: 50%;
-    background: #EEF1F6 !important;
-    border: 2px solid #CBD3E1 !important;
-    display: flex !important;
+    border-width: 2px;
+    border-style: solid;
+    display: flex;
     align-items: center;
     justify-content: center;
     font-size: 13px;
-    font-weight: 700 !important;
-    color: #4B5563 !important;
+    font-weight: 700;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
 .reasoning-step-line {
+    flex: 1 1 auto;
     width: 2px;
-    flex: 1;
-    background: #CBD3E1 !important;
+    background: #4B4E5C;
     margin-top: 4px;
-    min-height: 20px;
 }
 
 .reasoning-step:last-child .reasoning-step-line {
-    display: none !important;
+    display: none;
 }
 
 .reasoning-step-text {
     padding-top: 5px;
-    color: #1F2937 !important;
     font-size: 14.5px;
-    font-weight: 500 !important;
-    opacity: 1 !important;
 }
 
+/* ======================================================
+FINAL RECOMMENDATION STATUS COLORS
+====================================================== */
+
+.reasoning-step.final-approve .reasoning-step-number {
+    background: rgba(22, 163, 74, 0.13) !important;
+    border-color: #16a34a !important;
+    color: #16a34a !important;
+}
+
+.reasoning-step.final-approve .reasoning-step-text {
+    color: #16a34a !important;
+    font-weight: 700 !important;
+}
+
+
+.reasoning-step.final-review .reasoning-step-number {
+    background: rgba(245, 158, 11, 0.13) !important;
+    border-color: #f59e0b !important;
+    color: #f59e0b !important;
+}
+
+.reasoning-step.final-review .reasoning-step-text {
+    color: #f59e0b !important;
+    font-weight: 700 !important;
+}
+
+
+.reasoning-step.final-reject .reasoning-step-number {
+    background: rgba(220, 38, 38, 0.13) !important;
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+}
+
+.reasoning-step.final-reject .reasoning-step-text {
+    color: #dc2626 !important;
+    font-weight: 700 !important;
+}
 
 /* ======================================================
 AUDIT TRAIL TABLE
@@ -957,6 +996,278 @@ FEATURE IMPACT TABLE
 .feature-impact-table tbody tr:hover {
     background: #2A2B33;
 }
+
+/* ======================================================
+POLICY EXPLORER — STAT CARDS
+====================================================== */
+
+.policy-stat-card {
+    background: #23242A;
+    border: 1px solid #33353F;
+    border-radius: 16px;
+    padding: 18px 20px;
+    text-align: left;
+}
+
+.policy-stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.policy-stat-label {
+    font-size: 13px;
+    color: #A8B1C3;
+    margin-top: 6px;
+}
+
+/* ======================================================
+POLICY EXPLORER — KNOWLEDGE BASE CARDS
+====================================================== */
+
+.policy-kb-card {
+    background: #23242A;
+    border: 1px solid #0A93A6;
+    border-bottom: none;
+    border-radius: 14px 14px 0 0;
+    padding: 16px 18px;
+    margin-bottom: 0;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.policy-kb-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 6px;
+}
+
+.policy-kb-source {
+    font-size: 12px;
+    color: #8F98A8;
+}
+
+.policy-kb-source code {
+    background: #1C1D22;
+    color: #A8B1C3;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* ======================================================
+POLICY EXPLORER — RETRIEVED EVIDENCE CARDS
+====================================================== */
+.policy-explorer-card {
+    background: #23242A;
+    border: 1px solid #0A93A6;
+    border-bottom: none;
+    border-radius: 14px 14px 0 0;
+    padding: 18px 20px;
+    margin-bottom: 0;
+    box-sizing: border-box;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+
+.policy-explorer-card:hover {
+    border-color: #2AB6CC;
+}
+
+.policy-explorer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.policy-explorer-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.policy-explorer-score {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #2AB6CC;
+    background: rgba(10, 147, 166, 0.14);
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+.policy-explorer-reason {
+    margin-top: 10px;
+    font-size: 13.5px;
+    color: #A8B1C3;
+    line-height: 1.6;
+}
+
+.policy-explorer-source {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #6B7280;
+}
+
+.policy-explorer-source code {
+    background: #1C1D22;
+    color: #8F98A8;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* ======================================================
+POLICY EXPLORER — RANKING CHART CONTAINER
+====================================================== */
+
+.st-key-ranking_chart_card {
+    background: #23242A !important;
+    border: 1px solid #33353F !important;
+    border-radius: 18px !important;
+    padding: 16px 20px !important;
+    box-sizing: border-box !important;
+}
+
+/* ======================================================
+POLICY EXPLORER — EVALUATION MATRIX TABLE
+====================================================== */
+
+.matrix-table-wrapper {
+    width: 100%;
+    border: 1px solid #33353F;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #23242A;
+}
+
+.matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.matrix-table thead th {
+    background: #2A2B33;
+    color: #8F98A8;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid #33353F;
+}
+
+.matrix-table tbody td {
+    padding: 11px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid #2E2F38;
+}
+
+.matrix-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.matrix-table tbody tr:hover {
+    background: #2A2B33;
+}
+
+.matrix-name {
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.matrix-name-muted {
+    color: #6B7280;
+}
+
+.matrix-score {
+    color: #E4E4E7;
+    font-weight: 600;
+}
+
+.matrix-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.matrix-retrieved {
+    color: #4ADE80;
+}
+
+.matrix-not-retrieved {
+    color: #6B7280;
+}
+
+.matrix-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot-gray {
+    background: #4B4E5C;
+}
+
+/* ======================================================
+EXPANDER — DARK THEME (overrides light "details" rule above)
+====================================================== */
+.st-key-policy_explorer_page [data-testid="stExpander"],
+.st-key-policy_explorer_page [data-testid="stExpander"] > details,
+.st-key-policy_explorer_page [data-testid="stExpander"] summary,
+.st-key-policy_explorer_page [data-testid="stExpanderDetails"],
+.st-key-policy_explorer_page div[data-testid="stExpander"] div[data-testid="stVerticalBlock"] {
+    background: #1C1D22 !important;
+    color: #A8B1C3 !important;
+}
+
+.st-key-policy_explorer_page [data-testid="stExpander"] {
+    border: 1px solid #0A93A6 !important;
+    border-top: none !important;
+    border-radius: 0 0 14px 14px !important;
+    margin-top: -6px !important;
+    margin-bottom: 14px !important;
+    overflow: hidden !important;
+}
+
+.st-key-policy_explorer_page [data-testid="stExpander"] summary {
+    background: #3b3b40 !important;
+    color: #8F98A8 !important;
+    font-size: 12.5px !important;
+    padding: 10px 14px !important;
+}
+
+.st-key-policy_explorer_page [data-testid="stExpander"] summary:hover {
+    color: #C4CBDA !important;
+    background: #33353F !important;
+}
+
+.st-key-policy_explorer_page [data-testid="stExpander"] summary svg {
+    fill: #8F98A8 !important;
+}
+
+.st-key-policy_explorer_page [data-testid="stExpanderDetails"] {
+    background: #3b3b40 !important;
+    padding: 14px !important;
+}
+
+.st-key-policy_explorer_page [data-testid="stExpanderDetails"],
+.st-key-policy_explorer_page [data-testid="stExpanderDetails"] *,
+.st-key-policy_explorer_page [data-testid="stExpanderDetails"] [data-testid="stMarkdownContainer"],
+.st-key-policy_explorer_page [data-testid="stExpanderDetails"] [data-testid="stMarkdown"] {
+    background: #3b3b40 !important;
+}
+
+.st-key-policy_explorer_page [data-testid="stExpanderDetails"] p,
+.st-key-policy_explorer_page [data-testid="stExpanderDetails"] li,
+.st-key-policy_explorer_page [data-testid="stExpanderDetails"] span,
+.st-key-policy_explorer_page [data-testid="stExpanderDetails"] code,
+.st-key-policy_explorer_page [data-testid="stExpanderDetails"] pre {
+    color: #A8B1C3 !important;
+}
+
 </style>
 """
 

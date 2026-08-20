@@ -102,7 +102,8 @@ class RAGService:
             {
                 "policy": r["metadata"]["source"],
                 "text": r["text"],
-                "reason": r["reason"]
+                "reason": r["reason"],
+                "score": r.get("score", 0)
             }
             for r in results
         ]

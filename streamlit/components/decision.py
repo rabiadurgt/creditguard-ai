@@ -71,7 +71,7 @@ f"""
 <span class="kpi-title">Executive Decision</span>
 </div>
 
-<div class="kpi-value" style="color:{color};">{decision}</div>
+<div class="kpi-value" style="color:{color} !important;">{decision}</div>
 
 <div class="kpi-subtitle">{reason}</div>
 
@@ -94,18 +94,7 @@ unsafe_allow_html=True
 
 def reasoning_chain(result):
 
-    decision = result["decision"]["status"]
-
-    status_styles = {
-        "APPROVE": {"color": "#22C55E", "bg": "rgba(34, 197, 94, 0.12)"},
-        "REVIEW":  {"color": "#FACC15", "bg": "rgba(250, 204, 21, 0.12)"},
-        "REJECT":  {"color": "#EF4444", "bg": "rgba(239, 68, 68, 0.12)"},
-    }
-
-    final_style = status_styles.get(
-        decision,
-        {"color": "#22C55E", "bg": "rgba(34, 197, 94, 0.12)"}
-    )
+    decision = result["decision"]["status"].upper()
 
     steps = [
         "LightGBM generated default probability",
@@ -121,30 +110,37 @@ def reasoning_chain(result):
     for i, text in enumerate(steps, start=1):
 
         if i == total:
-            marker_style = (
-                f'background:{final_style["color"]}22;'
-                f'border-color:{final_style["color"]};'
-                f'color:{final_style["color"]};'
-            )
-            text_style = f'color:{final_style["color"]};font-weight:700;'
+            status_class = f"final-{decision.lower()}"
         else:
-            marker_style = ""
-            text_style = ""
+            status_class = ""
 
         blocks.append(
-            f'<div class="reasoning-step">'
-            f'<div class="reasoning-step-marker">'
-            f'<span class="reasoning-step-number" style="{marker_style}">{i}</span>'
-            f'<span class="reasoning-step-line"></span>'
-            f'</div>'
-            f'<div class="reasoning-step-text" style="{text_style}">{text}</div>'
-            f'</div>'
+            f"""
+            <div class="reasoning-step {status_class}">
+                <div class="reasoning-step-marker">
+
+                    <span class="reasoning-step-number">
+                        {i}
+                    </span>
+
+                    <span class="reasoning-step-line"></span>
+
+                </div>
+
+                <div class="reasoning-step-text">
+                    {text}
+                </div>
+            </div>
+            """
         )
 
-    st.markdown(
-        f'<div class="reasoning-timeline">{"".join(blocks)}</div>',
-        unsafe_allow_html=True
-    )
+    st.html(
+    f"""
+    <div class="reasoning-timeline">
+        {"".join(blocks)}
+    </div>
+    """
+)
 
 def decision_justification(result):
 
