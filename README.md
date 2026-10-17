@@ -53,6 +53,13 @@ The final decision is based on the project's risk scoring and decision logic.
 > These are project-specific decision thresholds and are not intended to represent universal banking or regulatory standards.
 
 ---
+## 🎥 Project Demo
+
+Watch the demo video to explore CreditGuard AI's end-to-end credit risk assessment workflow, interactive dashboards, Explainable AI, RAG-based policy intelligence, and AI decision agent.
+
+[▶️ Watch CreditGuard AI Demo]([VIDEO_LINKİNİ_BURAYA_EKLE](https://drive.google.com/file/d/14rKJe5IFnvH3ZNjXbBY94yIqKMQy8tEn/view?usp=sharing))
+
+---
 
 ## 🖥️ Dashboard
 
